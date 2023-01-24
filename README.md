@@ -3,7 +3,7 @@ Backend java app
 
 ## Instalation
 
-git clone git@github.com:a40o/Tinder.git
+git clone git@github.com:Kr1s4an/tinder.git
 
 
 ## Code Style
