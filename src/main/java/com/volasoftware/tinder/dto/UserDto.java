@@ -1,5 +1,6 @@
-package com.volasoftware.tinder.model;
+package com.volasoftware.tinder.dto;
 
+import com.volasoftware.tinder.model.Gender;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
