@@ -5,27 +5,29 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
+@Table(name = "USER")
 public class User extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "first_name", nullable = false, length = 50)
+    @Column(name = "FIRST_NAME", nullable = false, length = 50)
     private String firstName;
-    @Column(name = "last_name", nullable = false, length = 50)
+    @Column(name = "LAST_NAME", nullable = false, length = 50)
     private String lastName;
-    @Column(nullable = false, unique = true, length = 45)
+    @Column(name = "EMAIL", nullable = false, unique = true, length = 45)
     private String email;
-    @Column(nullable = false,length = 64)
+    @Column(name = "PASSWORD", nullable = false, length = 64)
     private String password;
-    @Column(name = "gender")
+    @Column(name = "GENDER")
+    @Enumerated(value = EnumType.STRING)
     Gender gender;
 
-    public String getFirstName(){
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName){
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
@@ -51,10 +53,6 @@ public class User extends Auditable<String> {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public void setGender(Gender male) {
-        this.gender = gender;
     }
 
     public Long getId() {
