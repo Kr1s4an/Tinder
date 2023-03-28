@@ -11,13 +11,13 @@ public class User extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "FIRST_NAME", nullable = false, length = 50)
+    @Column(name = "FIRST_NAME")
     private String firstName;
-    @Column(name = "LAST_NAME", nullable = false, length = 50)
+    @Column(name = "LAST_NAME")
     private String lastName;
-    @Column(name = "EMAIL", nullable = false, unique = true, length = 45)
+    @Column(name = "EMAIL")
     private String email;
-    @Column(name = "PASSWORD", nullable = false, length = 64)
+    @Column(name = "PASSWORD")
     private String password;
     @Column(name = "GENDER")
     @Enumerated(value = EnumType.STRING)
