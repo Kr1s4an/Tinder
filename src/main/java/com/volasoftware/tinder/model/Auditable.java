@@ -1,5 +1,6 @@
 package com.volasoftware.tinder.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Temporal;
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import static jakarta.persistence.TemporalType.TIMESTAMP;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -21,18 +23,14 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auditable<U> {
 
-    @CreatedBy
-    protected U createdBy;
-
     @CreatedDate
     @Temporal(TIMESTAMP)
-    protected Date createdDate;
-
-    @LastModifiedBy
-    protected U lastModifiedBy;
+    @Column(name = "CREATED_DATE")
+    protected LocalDateTime createdDate;
 
     @LastModifiedDate
     @Temporal(TIMESTAMP)
-    protected Date lastModifiedDate;
+    @Column(name = "LAST_MODIFIED_DATE")
+    protected LocalDateTime lastModifiedDate;
 
 }
