@@ -1,4 +1,4 @@
-insert into USER (
+insert into user (
 FIRST_NAME,
 LAST_NAME,
 EMAIL,
@@ -11,7 +11,7 @@ GENDER
 'test',
 'male'
 );
-insert into USER (
+insert into user (
 FIRST_NAME,
 LAST_NAME,
 EMAIL,
