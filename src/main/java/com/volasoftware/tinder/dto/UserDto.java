@@ -1,5 +1,6 @@
 package com.volasoftware.tinder.dto;
 
+import com.volasoftware.tinder.annotation.Password;
 import com.volasoftware.tinder.model.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +17,7 @@ public class UserDto {
     @NotBlank(message = "Name is mandatory")
     private String lastName;
     @NotBlank(message = "Password is mandatory")
+    @Password
     private String password;
     @NotBlank(message = "Email is mandatory")
     @Email
