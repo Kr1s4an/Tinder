@@ -1,7 +1,6 @@
 package com.volasoftware.tinder.model;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user")

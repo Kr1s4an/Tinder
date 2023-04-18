@@ -1,13 +1,8 @@
 package com.volasoftware.tinder.dto;
 
 import com.volasoftware.tinder.annotation.Password;
-import com.volasoftware.tinder.model.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 
 
 public class UserDto {
