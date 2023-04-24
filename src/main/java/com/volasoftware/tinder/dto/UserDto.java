@@ -1,6 +1,7 @@
 package com.volasoftware.tinder.dto;
 
 import com.volasoftware.tinder.annotation.Password;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -21,6 +22,7 @@ public class UserDto {
     @Password
     private String password;
     @NotBlank(message = "Email is mandatory")
+    @Column(unique = true)
     @Email
     private String email;
     @NotBlank(message = "Gender is mandatory")

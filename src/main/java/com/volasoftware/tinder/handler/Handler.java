@@ -1,5 +1,6 @@
 package com.volasoftware.tinder.handler;
 
+import com.volasoftware.tinder.exception.EmailAlreadyRegisteredException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,16 @@ public class Handler {
                     new Violation(violation.getPropertyPath().toString(), violation.getMessage()));
         }
         return error;
+    }
+
+    @ExceptionHandler(EmailAlreadyRegisteredException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    ViolationMessage emailExceptionHandler(
+            EmailAlreadyRegisteredException ex) {
+        ViolationMessage error =
+                    new ViolationMessage( ex.getMessage());
+            return error;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

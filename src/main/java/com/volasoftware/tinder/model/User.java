@@ -13,7 +13,7 @@ public class User extends Auditable<String> {
     private String firstName;
     @Column(name = "LAST_NAME")
     private String lastName;
-    @Column(name = "EMAIL", unique = true)
+    @Column(name = "EMAIL")
     private String email;
     @Column(name = "PASSWORD")
     private String password;
