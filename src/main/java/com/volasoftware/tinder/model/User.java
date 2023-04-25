@@ -1,11 +1,9 @@
 package com.volasoftware.tinder.model;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
-@Table(name = "USER")
+@Table(name = "user")
 public class User extends Auditable<String> {
 
     @Id
@@ -61,5 +59,13 @@ public class User extends Auditable<String> {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 }
