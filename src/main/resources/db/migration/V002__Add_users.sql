@@ -9,7 +9,7 @@ GENDER
 'Petkov',
 'admin@gmail.com',
 'test',
-'male'
+'MALE'
 );
 insert into user (
 FIRST_NAME,
@@ -22,5 +22,5 @@ GENDER
 'Maldjanski',
 'slave@gmail.com',
 'nobody',
-'female'
+'FEMALE'
 );
