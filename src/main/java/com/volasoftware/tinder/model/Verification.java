@@ -1,7 +1,6 @@
 package com.volasoftware.tinder.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -10,45 +9,59 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "verification_tokens")
-public class Verfication {
+public class Verification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "USER_ID")
-    private Long userId;
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "TOKEN")
-    private UUID token;
-
+    private String token;
+    @Temporal(TIMESTAMP)
+    @Column(name = "CREATED_DATE")
+    private LocalDateTime createdDate;
     @Temporal(TIMESTAMP)
     @Column(name = "EXPIRATION_DATE")
     private LocalDateTime expirationDate;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "USER_ID")
+    private User userId;
 
-    public Long getId() {
-        return id;
+    public User getId() {
+        return userId;
+    }
+
+    public void setId(User userId) {
+        this.userId = userId;
+    }
+
+    public User getUserId() {
+        return userId;
+    }
+
+    public void setUserId(User userId) {
+        this.userId = userId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public UUID getToken() {
-        return token;
-    }
-
-    public void setToken(UUID token) {
-        this.token = token;
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 
     public LocalDateTime getExpirationDate() {

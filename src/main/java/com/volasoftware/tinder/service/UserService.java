@@ -4,20 +4,26 @@ import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.exception.EmailAlreadyRegisteredException;
 import com.volasoftware.tinder.model.Gender;
 import com.volasoftware.tinder.model.User;
+import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
+import com.volasoftware.tinder.repository.VerificationRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final VerificationRepository verificationRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, VerificationRepository verificationRepository) {
         this.userRepository = userRepository;
+        this.verificationRepository = verificationRepository;
     }
 
     public List<User> getAll(){
@@ -37,6 +43,13 @@ public class UserService {
         user.setPassword(userDto.getPassword());
         user.setGender(Gender.valueOf(userDto.getGender()));
         userRepository.save(user);
+
+        Verification token = new Verification();
+        token.setUserId(user);
+        token.setToken(UUID.randomUUID().toString());
+        token.setCreatedDate(LocalDateTime.now());
+        token.setExpirationDate(LocalDateTime.now().plusDays(2));
+        verificationRepository.save(token);
     }
 
     public Optional<User> getById(Long id){
