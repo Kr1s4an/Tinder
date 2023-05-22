@@ -1,9 +1,10 @@
 package com.volasoftware.tinder.model;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static jakarta.persistence.TemporalType.TIMESTAMP;
 
@@ -13,13 +14,14 @@ public class Verfication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Long id;
 
     @Column(name = "USER_ID")
     private Long userId;
-
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "TOKEN")
-    private String token;
+    private UUID token;
 
     @Temporal(TIMESTAMP)
     @Column(name = "EXPIRATION_DATE")
@@ -41,11 +43,11 @@ public class Verfication {
         this.userId = userId;
     }
 
-    public String getToken() {
+    public UUID getToken() {
         return token;
     }
 
-    public void setToken(String token) {
+    public void setToken(UUID token) {
         this.token = token;
     }
 
