@@ -20,6 +20,7 @@ public class User extends Auditable<String> {
     @Column(name = "GENDER")
     @Enumerated(value = EnumType.STRING)
     Gender gender;
+    private boolean isValid;
 
     public String getFirstName() {
         return firstName;

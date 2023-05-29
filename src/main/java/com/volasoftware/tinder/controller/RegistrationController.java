@@ -4,11 +4,13 @@ package com.volasoftware.tinder.controller;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.service.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 public class RegistrationController {
@@ -24,7 +26,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/api/v1/users/register")
-    public ResponseEntity registerNewUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity registerNewUser(@Valid @RequestBody UserDto userDto) throws IOException, MessagingException {
         userService.registerUser(userDto);
 
         return ResponseEntity.ok(HttpStatus.OK);
