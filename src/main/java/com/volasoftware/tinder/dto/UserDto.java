@@ -2,6 +2,9 @@ package com.volasoftware.tinder.dto;
 
 import com.volasoftware.tinder.annotation.Password;
 import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -9,7 +12,6 @@ import jakarta.validation.constraints.Size;
 
 
 public class UserDto {
-
     @NotBlank(message = "Name is mandatory")
     @Pattern(regexp="^[A-Za-z]*$",message = "Must contain only letters")
     @Size(min = 2, max = 50, message = "The size must be between 2 and 50 letters")
@@ -27,7 +29,6 @@ public class UserDto {
     private String email;
     @NotBlank(message = "Gender is mandatory")
     private String gender;
-
 
     public String getFirstName() {
         return firstName;

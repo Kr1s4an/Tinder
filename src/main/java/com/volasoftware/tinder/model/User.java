@@ -20,6 +20,8 @@ public class User extends Auditable<String> {
     @Column(name = "GENDER")
     @Enumerated(value = EnumType.STRING)
     Gender gender;
+    @Column(name = "IS_VERIFIED")
+    private boolean isValid;
 
     public String getFirstName() {
         return firstName;
@@ -67,5 +69,12 @@ public class User extends Auditable<String> {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public void setValid(boolean valid) {
+        isValid = valid;
     }
 }
