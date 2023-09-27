@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
 public class JwtTokenVerifier {
-    public static boolean verifyToken(String token){
+    public static boolean verifyToken(String token) {
         try {
             Jwts.parser().parseClaimsJws(token);
             return true;
@@ -13,7 +13,7 @@ public class JwtTokenVerifier {
         }
     }
 
-    public static String getUsernameFromToken(String token){
+    public static String getUsernameFromToken(String token) {
         Claims claims = Jwts.parser().parseClaimsJws(token).getBody();
         return claims.getSubject();
     }
