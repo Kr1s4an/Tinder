@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.net.HttpCookie;
+import java.util.Objects;
 
 public class JwtTokenUtils {
 
@@ -18,14 +19,14 @@ public class JwtTokenUtils {
 
     public static String getTokenFromRequest(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
-        if(cookies!= null) {
+        if(Objects.nonNull(cookies)) {
             for (Cookie cookie : cookies){
                 if (cookie.getName().equals("token")){
                     return cookie.getValue();
                 }
             }
         }
-        return null;
+        throw new RuntimeException("ne raboti");
     }
 
 }
