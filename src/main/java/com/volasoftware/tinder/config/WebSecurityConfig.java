@@ -28,6 +28,7 @@ public class WebSecurityConfig {
             "/api/v1/users/login",
             "/error",
     };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         
@@ -45,5 +46,4 @@ public class WebSecurityConfig {
 
         return http.build();
     }
-
 }

@@ -23,7 +23,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserService userService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserService userService) {
+    public JwtAuthenticationFilter(JwtService jwtService,
+                                   UserService userService) {
         this.jwtService = jwtService;
         this.userService = userService;
     }
@@ -36,11 +37,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
-        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, "Bearer ")) {
+        final String baerer = "Bearer ";
+        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader,  baerer)) {
             filterChain.doFilter(request, response);
+
             return;
         }
-        jwt = authHeader.substring(7);
+        jwt = String.valueOf(authHeader.length());
         userEmail = jwtService.extractUserName(jwt);
         if (StringUtils.isNotEmpty(userEmail)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {

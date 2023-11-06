@@ -37,7 +37,6 @@ import java.util.UUID;
 
 @Service
 public class UserService {
-
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
@@ -131,6 +130,4 @@ public class UserService {
             }
         };
     }
-
-
 }

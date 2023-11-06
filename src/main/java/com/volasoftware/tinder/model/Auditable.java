@@ -22,7 +22,6 @@ import java.util.Date;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auditable<U> {
-
     @CreatedDate
     @Temporal(TIMESTAMP)
     @Column(name = "CREATED_DATE")
@@ -32,5 +31,4 @@ public abstract class Auditable<U> {
     @Temporal(TIMESTAMP)
     @Column(name = "LAST_MODIFIED_DATE")
     protected LocalDateTime lastModifiedDate;
-
 }

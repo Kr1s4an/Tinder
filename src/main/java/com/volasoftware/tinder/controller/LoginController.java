@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
     private final UserService userService;
-
     private final JwtService jwtService;
 
-    public LoginController(UserService userService, JwtService jwtService) {
+    public LoginController(UserService userService,
+                           JwtService jwtService) {
         this.userService = userService;
         this.jwtService = jwtService;
     }
@@ -25,9 +25,7 @@ public class LoginController {
     @PostMapping("/api/v1/users/login")
     public ResponseEntity loginUser(@Valid @RequestBody LoginUserDto loginUserDto) {
         User authenticatedUser = userService.loginUser(loginUserDto);
-
         String jwtToken = jwtService.generateToken(authenticatedUser);
-
 
         return ResponseEntity.ok(jwtToken);
     }

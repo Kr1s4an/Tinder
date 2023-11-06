@@ -11,7 +11,6 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 public class User extends Auditable<String> implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -89,7 +88,6 @@ public class User extends Auditable<String> implements UserDetails {
     public void setEmail(String email) {
         this.email = email;
     }
-
 
     public void setPassword(String password) {
         this.password = password;
