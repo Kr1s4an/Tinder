@@ -27,8 +27,9 @@ public class User extends Auditable<String> implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     Gender gender;
     @Column(name = "IS_VERIFIED")
-    private boolean isValid;
+    private boolean isVerified;
     @Enumerated(EnumType.STRING)
+    @Column(name = "ROLE")
     private Role role;
 
     @Override
@@ -109,12 +110,12 @@ public class User extends Auditable<String> implements UserDetails {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
-    public boolean isValid() {
-        return isValid;
+    public boolean isVerified() {
+        return isVerified;
     }
 
-    public void setValid(boolean valid) {
-        isValid = valid;
+    public void setVerified(boolean verified) {
+        isVerified = verified;
     }
 
     public Role getRole() {

@@ -108,7 +108,7 @@ public class UserService {
                 user.getPassword())) {
             throw new PasswordDoesNotMatchException("Password does not match");
         }
-        if(!user.isValid()){
+        if(!user.isVerified()){
             throw new UserIsNotVerifiedException("The email is not verified");
         }
         return user;

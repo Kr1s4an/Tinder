@@ -34,7 +34,7 @@ public class VerificationService{
         if(tokenEntity.getExpirationDate().isAfter(LocalDateTime.now())){
             User userToVerify = tokenEntity.getUserId();
 
-            userToVerify.setValid(true);
+            userToVerify.setVerified(true);
 
             userRepository.save(userToVerify);
 
