@@ -105,7 +105,7 @@ public class UserService {
         User user = userRepository.findOneByEmail(input.getEmail()).orElseThrow(
                 () -> new UserDoesNotExistException("User with this email does not exist"));
         if (!passwordEncoder.matches(input.getPassword(),
-                userDetailsService().loadUserByUsername(input.getEmail()).getPassword())) {
+                user.getPassword())) {
             throw new PasswordDoesNotMatchException("Password does not match");
         }
         if(!user.isValid()){
