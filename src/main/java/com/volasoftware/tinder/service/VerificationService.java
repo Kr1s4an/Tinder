@@ -11,31 +11,24 @@ import java.time.LocalDateTime;
 
 @Service
 public class VerificationService{
-
     private final VerificationRepository verificationRepository;
     private final UserRepository userRepository;
-
-    public void saveVerificationToken(Verification token){
-
-        verificationRepository.save(token);
-
-    }
 
     public VerificationService(VerificationRepository verificationRepository,
                                UserRepository userRepository) {
         this.verificationRepository = verificationRepository;
         this.userRepository = userRepository;
     }
-    public boolean verifyUser(String token){
 
+    public void saveVerificationToken(Verification token){
+        verificationRepository.save(token);
+    }
+    public boolean verifyUser(String token){
         Verification tokenEntity = verificationRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidVerificationToken("Invalid token"));
-
         if(tokenEntity.getExpirationDate().isAfter(LocalDateTime.now())){
             User userToVerify = tokenEntity.getUserId();
-
-            userToVerify.setValid(true);
-
+            userToVerify.setVerified(true);
             userRepository.save(userToVerify);
 
             return true;

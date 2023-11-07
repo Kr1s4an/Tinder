@@ -1,0 +1,2 @@
+ALTER TABLE user
+ADD COLUMN ROLE varchar(15) not null AFTER GENDER;

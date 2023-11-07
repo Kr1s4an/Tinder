@@ -31,5 +31,4 @@ public class RegistrationController {
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
-
 }

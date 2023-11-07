@@ -1,11 +1,16 @@
 package com.volasoftware.tinder.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
-public class User extends Auditable<String> {
-
+public class User extends Auditable<String> implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +26,44 @@ public class User extends Auditable<String> {
     @Enumerated(value = EnumType.STRING)
     Gender gender;
     @Column(name = "IS_VERIFIED")
-    private boolean isValid;
+    private boolean isVerified;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ROLE")
+    private Role role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -47,10 +89,6 @@ public class User extends Auditable<String> {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -70,11 +108,19 @@ public class User extends Auditable<String> {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
-    public boolean isValid() {
-        return isValid;
+    public boolean isVerified() {
+        return isVerified;
     }
 
-    public void setValid(boolean valid) {
-        isValid = valid;
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

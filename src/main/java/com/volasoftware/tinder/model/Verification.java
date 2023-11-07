@@ -10,12 +10,10 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 @Entity
 @Table(name = "verification_tokens")
 public class Verification {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
-
     @Column(name = "TOKEN")
     private String token;
     @Temporal(TIMESTAMP)

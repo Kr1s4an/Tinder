@@ -17,8 +17,7 @@ public class VerificationController {
 
     @GetMapping("/verify/{token}")
     public ResponseEntity<?> verifyUser(@PathVariable String token){
+
         return (verificationService.verifyUser(token)) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
-
     }
-
 }
