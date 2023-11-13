@@ -3,7 +3,6 @@ package com.volasoftware.tinder.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import static jakarta.persistence.TemporalType.TIMESTAMP;
 
@@ -13,7 +12,7 @@ public class Verification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private Long id;
+    private java.lang.Long id;
     @Column(name = "TOKEN")
     private String token;
     @Temporal(TIMESTAMP)
@@ -23,23 +22,23 @@ public class Verification {
     @Column(name = "EXPIRATION_DATE")
     private LocalDateTime expirationDate;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "USER_ID")
-    private User userId;
+    @JoinColumn(name = "USER")
+    private User user;
 
-    public User getId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
-    public void setId(User userId) {
-        this.userId = userId;
+    public void setId(java.lang.Long id) {
+        this.id = id;
     }
 
-    public User getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(User userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getToken() {
@@ -48,10 +47,6 @@ public class Verification {
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public LocalDateTime getCreatedDate() {

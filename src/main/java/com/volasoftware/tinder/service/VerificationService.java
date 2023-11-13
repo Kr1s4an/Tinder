@@ -27,7 +27,7 @@ public class VerificationService{
         Verification tokenEntity = verificationRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidVerificationToken("Invalid token"));
         if(tokenEntity.getExpirationDate().isAfter(LocalDateTime.now())){
-            User userToVerify = tokenEntity.getUserId();
+            User userToVerify = tokenEntity.getUser();
             userToVerify.setVerified(true);
             userRepository.save(userToVerify);
 

@@ -21,7 +21,7 @@ public class RegistrationController {
     }
 
     @GetMapping("/api/v1/users/{id}")
-    public User getUser(@PathVariable Long id) {
+    public User getUser(@PathVariable java.lang.Long id) {
         return userService.getById(id).get();
     }
 
