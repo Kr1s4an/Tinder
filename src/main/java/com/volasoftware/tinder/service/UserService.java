@@ -59,7 +59,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    private String getEmailContent(String token) throws IOException {
+    public String getEmailContent(String token) throws IOException {
         Resource emailResource = resourceLoader.getResource("classpath:email/registrationEmail.html");
         File emailFile = emailResource.getFile();
         Path path = Path.of(emailFile.getPath());
@@ -85,7 +85,7 @@ public class UserService {
         userRepository.save(user);
 
         Verification token = new Verification();
-        token.setUserId(user);
+        token.setUser(user);
         token.setToken(UUID.randomUUID().toString());
         token.setCreatedDate(LocalDateTime.now());
         token.setExpirationDate(LocalDateTime.now().plusDays(2));
@@ -113,7 +113,7 @@ public class UserService {
         return user;
     }
 
-    public Optional<User> getById(Long id) {
+    public Optional<User> getById(java.lang.Long id) {
         return userRepository.findById(id);
     }
 
