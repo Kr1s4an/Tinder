@@ -108,6 +108,7 @@ public class User extends Auditable<String> implements UserDetails {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
+
     public boolean isVerified() {
         return isVerified;
     }

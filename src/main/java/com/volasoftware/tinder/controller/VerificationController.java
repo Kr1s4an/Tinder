@@ -55,7 +55,7 @@ public class VerificationController {
         User user = userRepository.findOneByEmail(email).orElseThrow(
                 () -> new UserDoesNotExistException("User with this email does not exist")
         );
-        if(user.isVerified()){
+        if (user.isVerified()) {
             throw new UserAlreadyVerifiedException("User is already verified");
         }
         Optional<Verification> oldTokenEntity = verificationRepository.findTokenByUserId(user.getId());
