@@ -1,11 +1,12 @@
 package com.volasoftware.tinder.service;
 
+import com.volasoftware.tinder.dto.LoginUserDto;
 import com.volasoftware.tinder.dto.UserDto;
+import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.exception.EmailAlreadyRegisteredException;
 import com.volasoftware.tinder.exception.PasswordDoesNotMatchException;
 import com.volasoftware.tinder.exception.UserDoesNotExistException;
 import com.volasoftware.tinder.exception.UserIsNotVerifiedException;
-import com.volasoftware.tinder.dto.LoginUserDto;
 import com.volasoftware.tinder.model.Gender;
 import com.volasoftware.tinder.model.Role;
 import com.volasoftware.tinder.model.User;
@@ -109,7 +110,7 @@ public class UserService {
                 user.getPassword())) {
             throw new PasswordDoesNotMatchException("Password does not match");
         }
-        if(!user.isVerified()){
+        if (!user.isVerified()) {
             throw new UserIsNotVerifiedException("The email is not verified");
         }
         return user;
@@ -131,5 +132,17 @@ public class UserService {
                         new UsernameNotFoundException("User not found"));
             }
         };
+    }
+
+    public UserProfileDto getCurrentUser(UserProfileDto userProfileDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = authentication.getName();
+        User user = userRepository.findOneByEmail(currentUser).orElseThrow();
+        userProfileDto.setFirstName(user.getFirstName());
+        userProfileDto.setLastName(user.getLastName());
+        userProfileDto.setEmail(user.getEmail());
+        userProfileDto.setGender(user.getGender());
+
+        return userProfileDto;
     }
 }
