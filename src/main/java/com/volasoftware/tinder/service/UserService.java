@@ -3,10 +3,7 @@ package com.volasoftware.tinder.service;
 import com.volasoftware.tinder.dto.LoginUserDto;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.dto.UserProfileDto;
-import com.volasoftware.tinder.exception.EmailAlreadyRegisteredException;
-import com.volasoftware.tinder.exception.PasswordDoesNotMatchException;
-import com.volasoftware.tinder.exception.UserDoesNotExistException;
-import com.volasoftware.tinder.exception.UserIsNotVerifiedException;
+import com.volasoftware.tinder.exception.*;
 import com.volasoftware.tinder.model.Gender;
 import com.volasoftware.tinder.model.Role;
 import com.volasoftware.tinder.model.User;
@@ -137,7 +134,8 @@ public class UserService {
     public UserProfileDto getCurrentUser(UserProfileDto userProfileDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = authentication.getName();
-        User user = userRepository.findOneByEmail(currentUser).orElseThrow();
+        User user = userRepository.findOneByEmail(currentUser).orElseThrow(() ->
+                new NotLoggedInException("You are not logged in!"));
         userProfileDto.setFirstName(user.getFirstName());
         userProfileDto.setLastName(user.getLastName());
         userProfileDto.setEmail(user.getEmail());
