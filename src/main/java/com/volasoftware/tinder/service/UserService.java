@@ -20,7 +20,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -113,7 +112,7 @@ public class UserService {
         return user;
     }
 
-    public Optional<User> getById(java.lang.Long id) {
+    public Optional<User> getById(long id) {
         return userRepository.findById(id);
     }
 
@@ -122,25 +121,17 @@ public class UserService {
     }
 
     public UserDetailsService userDetailsService() {
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String username) {
-                return userRepository.findOneByEmail(username).orElseThrow(() ->
-                        new UsernameNotFoundException("User not found"));
-            }
-        };
+        return username -> userRepository.findOneByEmail(username).orElseThrow(() ->
+                new UsernameNotFoundException("User not found"));
     }
 
-    public UserProfileDto getCurrentUser(UserProfileDto userProfileDto) {
+    public UserProfileDto getCurrentUserProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = authentication.getName();
+
         User user = userRepository.findOneByEmail(currentUser).orElseThrow(() ->
                 new NotLoggedInException("You are not logged in!"));
-        userProfileDto.setFirstName(user.getFirstName());
-        userProfileDto.setLastName(user.getLastName());
-        userProfileDto.setEmail(user.getEmail());
-        userProfileDto.setGender(user.getGender());
 
-        return userProfileDto;
+        return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
     }
 }

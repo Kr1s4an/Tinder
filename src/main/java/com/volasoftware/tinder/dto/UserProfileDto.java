@@ -8,6 +8,13 @@ public class UserProfileDto {
     private String email;
     private Gender gender;
 
+    public UserProfileDto(String firstName, String lastName, String email, Gender gender) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.gender = gender;
+    }
+
     public String getFirstName() {
         return firstName;
     }

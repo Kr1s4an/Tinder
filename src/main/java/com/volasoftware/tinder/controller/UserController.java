@@ -19,8 +19,8 @@ public class UserController {
     @GetMapping("/api/v1/users/profile")
     @SecurityRequirement(name = "Bearer Authentication")
     @ResponseBody
-    public UserProfileDto getUserProfile(UserProfileDto userProfileDto) {
+    public UserProfileDto getUserProfile() {
 
-        return userService.getCurrentUser(userProfileDto);
+        return userService.getCurrentUserProfile();
     }
 }
