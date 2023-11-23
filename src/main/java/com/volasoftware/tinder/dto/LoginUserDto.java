@@ -1,4 +1,4 @@
-package com.volasoftware.tinder.login;
+package com.volasoftware.tinder.dto;
 
 public class LoginUserDto {
     private String email;

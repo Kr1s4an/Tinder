@@ -20,11 +20,6 @@ public class RegistrationController {
         this.userService = userService;
     }
 
-    @GetMapping("/api/v1/users/{id}")
-    public User getUser(@PathVariable java.lang.Long id) {
-        return userService.getById(id).get();
-    }
-
     @PostMapping("/api/v1/users/register")
     public ResponseEntity registerNewUser(@Valid @RequestBody UserDto userDto) throws IOException, MessagingException {
         userService.registerUser(userDto);
