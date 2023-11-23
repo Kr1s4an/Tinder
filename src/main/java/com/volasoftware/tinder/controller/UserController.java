@@ -19,7 +19,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/api/v1/users/profile")
+    @GetMapping("/api/v1/users/show-profile")
     @SecurityRequirement(name = "Bearer Authentication")
     @ResponseBody
     public UserProfileDto getUserProfile() {
@@ -27,7 +27,7 @@ public class UserController {
         return userService.getCurrentUserProfile();
     }
 
-    @PostMapping("/api/v1/users/profile")
+    @PostMapping("/api/v1/users/edit-profile")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity editUser(UserProfileDto userProfileDto){
         userService.editUserProfile(userProfileDto);
