@@ -10,6 +10,7 @@ import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -133,5 +134,17 @@ public class UserService {
                 new NotLoggedInException("You are not logged in!"));
 
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
+    }
+
+    public void editUserProfile(@RequestBody UserProfileDto userProfileDto){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = authentication.getName();
+
+        User user = userRepository.findOneByEmail(currentUser).orElseThrow();
+        user.setFirstName(userProfileDto.getFirstName());
+        user.setLastName(userProfileDto.getLastName());
+        user.setEmail(userProfileDto.getEmail());
+        user.setGender(userProfileDto.getGender());
+        userRepository.save(user);
     }
 }
