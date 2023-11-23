@@ -135,16 +135,4 @@ public class UserService {
 
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
     }
-
-    public void editUserProfile(@RequestBody UserProfileDto userProfileDto){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUser = authentication.getName();
-
-        User user = userRepository.findOneByEmail(currentUser).orElseThrow();
-        user.setFirstName(userProfileDto.getFirstName());
-        user.setLastName(userProfileDto.getLastName());
-        user.setEmail(userProfileDto.getEmail());
-        user.setGender(userProfileDto.getGender());
-        userRepository.save(user);
-    }
 }
