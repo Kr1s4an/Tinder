@@ -4,6 +4,7 @@ import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class UserController {
 
     @PutMapping("/api/v1/users/profile")
     @SecurityRequirement(name = "Bearer Authentication")
-    public UserProfileDto editUser(@Valid @RequestBody UserProfileDto userProfileDto) {
-        return userService.editUserProfile(userProfileDto);
+    public ResponseEntity<UserProfileDto> editUser(@Valid @RequestBody UserProfileDto userProfileDto) {
+        return new ResponseEntity<>(userService.editUserProfile(userProfileDto), HttpStatus.OK);
     }
 }

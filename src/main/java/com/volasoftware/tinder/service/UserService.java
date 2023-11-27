@@ -142,10 +142,27 @@ public class UserService {
 
         User user = userRepository.findOneByEmail(currentUser).orElseThrow(() ->
                 new NotLoggedInException("You are not logged in!"));
-        user.setFirstName(userProfileDto.getFirstName());
-        user.setLastName(userProfileDto.getLastName());
-        user.setEmail(userProfileDto.getEmail());
-        user.setGender(userProfileDto.getGender());
+
+        if (userProfileDto.getFirstName() == null) {
+            user.getFirstName();
+        } else {
+            user.setFirstName(userProfileDto.getFirstName());
+        }
+        if (userProfileDto.getLastName() == null) {
+            user.getLastName();
+        } else {
+            user.setLastName(userProfileDto.getLastName());
+        }
+        if (userProfileDto.getEmail() == null) {
+            user.getEmail();
+        } else {
+            user.setEmail(userProfileDto.getEmail());
+        }
+        if (userProfileDto.getGender() == null) {
+            user.getGender();
+        } else {
+            user.setGender(userProfileDto.getGender());
+        }
         userRepository.save(user);
 
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
