@@ -136,7 +136,7 @@ public class UserService {
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
     }
 
-    public UserProfileDto editUserProfile(@RequestBody UserProfileDto userProfileDto){
+    public UserProfileDto editUserProfile(@RequestBody UserProfileDto userProfileDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = authentication.getName();
 

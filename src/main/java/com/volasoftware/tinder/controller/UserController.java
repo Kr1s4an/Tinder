@@ -26,7 +26,7 @@ public class UserController {
 
     @PutMapping("/api/v1/users/edit-profile")
     @SecurityRequirement(name = "Bearer Authentication")
-    public UserProfileDto editUser(UserProfileDto userProfileDto){
+    public UserProfileDto editUser(UserProfileDto userProfileDto) {
         return userService.editUserProfile(userProfileDto);
     }
 }
