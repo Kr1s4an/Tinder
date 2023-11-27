@@ -1,6 +1,7 @@
 package com.volasoftware.tinder.dto;
 
 import com.volasoftware.tinder.annotation.Password;
+import com.volasoftware.tinder.model.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,8 +28,7 @@ public class UserDto {
     @Column(unique = true)
     @Email
     private String email;
-    @NotBlank(message = "Gender is mandatory")
-    private String gender;
+    private Gender gender;
 
     public String getFirstName() {
         return firstName;
@@ -62,11 +62,11 @@ public class UserDto {
         this.email = email;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 

@@ -80,7 +80,7 @@ public class UserService {
         user.setLastName(userDto.getLastName());
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode(userDto.getPassword()));
-        user.setGender(Gender.valueOf(userDto.getGender()));
+        user.setGender(userDto.getGender());
         user.setRole(Role.USER);
         userRepository.save(user);
 
