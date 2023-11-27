@@ -29,9 +29,7 @@ public class UserController {
 
     @PostMapping("/api/v1/users/edit-profile")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity editUser(UserProfileDto userProfileDto){
-        userService.editUserProfile(userProfileDto);
-
-        return ResponseEntity.ok(HttpStatus.OK );
+    public UserProfileDto editUser(UserProfileDto userProfileDto){
+        return userService.editUserProfile(userProfileDto);
     }
 }
