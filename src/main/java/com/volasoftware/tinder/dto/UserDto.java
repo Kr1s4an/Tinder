@@ -14,11 +14,11 @@ import jakarta.validation.constraints.Size;
 
 public class UserDto {
     @NotBlank(message = "Name is mandatory")
-    @Pattern(regexp="^[A-Za-z]*$",message = "Must contain only letters")
+    @Pattern(regexp = "^[A-Za-z]*$", message = "Must contain only letters")
     @Size(min = 2, max = 50, message = "The size must be between 2 and 50 letters")
     private String firstName;
     @NotBlank(message = "Name is mandatory")
-    @Pattern(regexp="^[A-Za-z]*$",message = "Must contain only letters")
+    @Pattern(regexp = "^[A-Za-z]*$", message = "Must contain only letters")
     @Size(min = 2, max = 50, message = "The size must be between 2 and 50 letters")
     private String lastName;
     @NotBlank(message = "Password is mandatory")
