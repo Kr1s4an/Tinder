@@ -4,7 +4,6 @@ import com.volasoftware.tinder.dto.LoginUserDto;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.exception.*;
-import com.volasoftware.tinder.model.Gender;
 import com.volasoftware.tinder.model.Role;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.Verification;
@@ -14,6 +13,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -143,27 +143,20 @@ public class UserService {
         User user = userRepository.findOneByEmail(currentUser).orElseThrow(() ->
                 new NotLoggedInException("You are not logged in!"));
 
-        if (userProfileDto.getFirstName() == null) {
-            user.getFirstName();
-        } else {
+        if (StringUtils.isNotEmpty(userProfileDto.getFirstName())) {
             user.setFirstName(userProfileDto.getFirstName());
         }
-        if (userProfileDto.getLastName() == null) {
-            user.getLastName();
-        } else {
+        if (StringUtils.isNotEmpty(userProfileDto.getLastName())) {
             user.setLastName(userProfileDto.getLastName());
         }
-        if (userProfileDto.getEmail() == null) {
-            user.getEmail();
-        } else {
+        if (StringUtils.isNotEmpty(userProfileDto.getEmail())) {
             user.setEmail(userProfileDto.getEmail());
         }
-        if (userProfileDto.getGender() == null) {
-            user.getGender();
-        } else {
+        if (userProfileDto.getGender() != null) {
             user.setGender(userProfileDto.getGender());
         }
-        userRepository.save(user);
+
+        user = userRepository.save(user);
 
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
     }
