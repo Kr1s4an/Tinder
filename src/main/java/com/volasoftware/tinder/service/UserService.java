@@ -140,7 +140,8 @@ public class UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = authentication.getName();
 
-        User user = userRepository.findOneByEmail(currentUser).orElseThrow();
+        User user = userRepository.findOneByEmail(currentUser).orElseThrow(() ->
+                new NotLoggedInException("You are not logged in!"));
         user.setFirstName(userProfileDto.getFirstName());
         user.setLastName(userProfileDto.getLastName());
         user.setEmail(userProfileDto.getEmail());
