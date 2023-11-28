@@ -1,6 +1,7 @@
 package com.volasoftware.tinder;
 
 import com.volasoftware.tinder.model.Gender;
+import com.volasoftware.tinder.model.Role;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -24,19 +25,24 @@ public class UserRepositoryTests {
     private UserRepository userRepository;
 
     @Test
-    public void testCreateUser(){
+    public void testUserRepositorySaveUserReturnSavedUser(){
 
+        //Arranges
         User user = new User();
         user.setEmail("test@gmail.com");
         user.setPassword("testtest");
         user.setFirstName("Test");
         user.setLastName("Test");
         user.setGender(Gender.MALE);
+        user.setVerified(true);
+        user.setRole(Role.USER);
 
+        //Act
         User savedUser = userRepository.save(user);
 
         User existUser = entityManager.find(User.class, savedUser.getId());
 
+        //Assert
         assertThat(user.getEmail()).isEqualTo(existUser.getEmail());
 
     }
