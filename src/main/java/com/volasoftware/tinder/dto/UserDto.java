@@ -1,6 +1,7 @@
 package com.volasoftware.tinder.dto;
 
 import com.volasoftware.tinder.annotation.Password;
+import com.volasoftware.tinder.model.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,11 +14,11 @@ import jakarta.validation.constraints.Size;
 
 public class UserDto {
     @NotBlank(message = "Name is mandatory")
-    @Pattern(regexp="^[A-Za-z]*$",message = "Must contain only letters")
+    @Pattern(regexp = "^[A-Za-z]*$", message = "Must contain only letters")
     @Size(min = 2, max = 50, message = "The size must be between 2 and 50 letters")
     private String firstName;
     @NotBlank(message = "Name is mandatory")
-    @Pattern(regexp="^[A-Za-z]*$",message = "Must contain only letters")
+    @Pattern(regexp = "^[A-Za-z]*$", message = "Must contain only letters")
     @Size(min = 2, max = 50, message = "The size must be between 2 and 50 letters")
     private String lastName;
     @NotBlank(message = "Password is mandatory")
@@ -27,8 +28,7 @@ public class UserDto {
     @Column(unique = true)
     @Email
     private String email;
-    @NotBlank(message = "Gender is mandatory")
-    private String gender;
+    private Gender gender;
 
     public String getFirstName() {
         return firstName;
@@ -62,11 +62,11 @@ public class UserDto {
         this.email = email;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 

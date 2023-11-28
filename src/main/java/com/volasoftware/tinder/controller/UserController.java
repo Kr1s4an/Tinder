@@ -3,12 +3,11 @@ package com.volasoftware.tinder.controller;
 import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -25,5 +24,11 @@ public class UserController {
     public UserProfileDto getUserProfile() {
 
         return userService.getCurrentUserProfile();
+    }
+
+    @PutMapping("/api/v1/users/profile")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<UserProfileDto> editUser(@Valid @RequestBody UserProfileDto userProfileDto) {
+        return new ResponseEntity<>(userService.editUserProfile(userProfileDto), HttpStatus.OK);
     }
 }
