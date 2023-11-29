@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.annotation.Rollback;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -25,7 +27,7 @@ public class UserRepositoryTests {
     private UserRepository userRepository;
 
     @Test
-    public void testUserRepositorySaveUserReturnSavedUser(){
+    public void testUserRepositorySaveUserAndReturnSavedUser() {
 
         //Arranges
         User user = new User();
@@ -44,7 +46,35 @@ public class UserRepositoryTests {
 
         //Assert
         assertThat(user.getEmail()).isEqualTo(existUser.getEmail());
-
     }
 
+    @Test
+    public void testUserRepositoryGetAllUsersAndReturnMoreThanOneUser() {
+
+        User user = new User();
+        user.setEmail("test@gmail.com");
+        user.setPassword("testtest");
+        user.setFirstName("Test");
+        user.setLastName("Test");
+        user.setGender(Gender.MALE);
+        user.setVerified(true);
+        user.setRole(Role.USER);
+
+        User user2 = new User();
+        user2.setFirstName("Test");
+        user2.setLastName("Test");
+        user2.setEmail("test2@gmail.com");
+        user2.setPassword("testtest");
+        user2.setGender(Gender.MALE);
+        user2.setVerified(true);
+        user2.setRole(Role.USER);
+
+        userRepository.save(user);
+        userRepository.save(user2);
+
+        List<User> userList = userRepository.findAll();
+
+        assertThat(userList).isNotNull();
+        assertThat(userList.size()).isEqualTo(2);
+    }
 }
