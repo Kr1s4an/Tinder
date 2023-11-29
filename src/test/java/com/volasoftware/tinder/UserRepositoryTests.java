@@ -77,4 +77,22 @@ public class UserRepositoryTests {
         assertThat(userList).isNotNull();
         assertThat(userList.size()).isEqualTo(2);
     }
+
+    @Test
+    public void testUserRepositoryGetUserByEmailAndReturnTheUser() {
+        User user = new User();
+        user.setEmail("test@gmail.com");
+        user.setPassword("testtest");
+        user.setFirstName("Test");
+        user.setLastName("Test");
+        user.setGender(Gender.MALE);
+        user.setVerified(true);
+        user.setRole(Role.USER);
+
+        userRepository.save(user);
+
+        User userList = userRepository.findOneByEmail(user.getEmail()).get();
+
+        assertThat(userList).isNotNull();
+    }
 }
