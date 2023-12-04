@@ -16,7 +16,6 @@ import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -40,23 +39,21 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService{
     private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private VerificationRepository verificationRepository;
-    @Autowired
-    private ResourceLoader resourceLoader;
-    @Autowired
-    private JavaMailSender mailSender;
+    private final UserRepository userRepository;
+    private final VerificationRepository verificationRepository;
+    private final ResourceLoader resourceLoader;
+    private final JavaMailSender mailSender;
 
-//    public UserServiceImpl(
-//                           VerificationRepository verificationRepository,
-//                           ResourceLoader resourceLoader,
-//                           JavaMailSender mailSender) {
-//        this.verificationRepository = verificationRepository;
-//        this.resourceLoader = resourceLoader;
-//        this.mailSender = mailSender;
-//    }
+    public UserServiceImpl(
+            UserRepository userRepository,
+            VerificationRepository verificationRepository,
+            ResourceLoader resourceLoader,
+            JavaMailSender mailSender) {
+        this.userRepository = userRepository;
+        this.verificationRepository = verificationRepository;
+        this.resourceLoader = resourceLoader;
+        this.mailSender = mailSender;
+    }
 
 @Override
     public List<User> getAll() {
