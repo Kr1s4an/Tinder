@@ -23,12 +23,12 @@ public class VerificationService {
     private final VerificationRepository verificationRepository;
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     public VerificationService(VerificationRepository verificationRepository,
                                UserRepository userRepository,
                                JavaMailSender mailSender,
-                               UserService userService) {
+                               UserServiceImpl userService) {
         this.verificationRepository = verificationRepository;
         this.userRepository = userRepository;
         this.mailSender = mailSender;

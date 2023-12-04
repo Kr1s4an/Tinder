@@ -2,7 +2,7 @@ package com.volasoftware.tinder.controller;
 
 
 import com.volasoftware.tinder.dto.UserDto;
-import com.volasoftware.tinder.service.UserService;
+import com.volasoftware.tinder.service.UserServiceImpl;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -15,9 +15,9 @@ import java.io.IOException;
 
 @RestController
 public class RegistrationController {
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
-    public RegistrationController(UserService userService) {
+    public RegistrationController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
