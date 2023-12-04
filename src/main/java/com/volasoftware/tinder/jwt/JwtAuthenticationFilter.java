@@ -1,6 +1,6 @@
 package com.volasoftware.tinder.jwt;
 
-import com.volasoftware.tinder.service.UserServiceImpl;
+import com.volasoftware.tinder.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,12 +21,12 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     private static final String BEARAR_PREFIX = "Bearer ";
 
     public JwtAuthenticationFilter(JwtService jwtService,
-                                   UserServiceImpl userService) {
+                                   UserService userService) {
         this.jwtService = jwtService;
         this.userService = userService;
     }

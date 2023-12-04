@@ -1,9 +1,9 @@
 package com.volasoftware.tinder.controller;
 
-import com.volasoftware.tinder.jwt.JwtService;
 import com.volasoftware.tinder.dto.LoginUserDto;
+import com.volasoftware.tinder.jwt.JwtService;
 import com.volasoftware.tinder.model.User;
-import com.volasoftware.tinder.service.UserServiceImpl;
+import com.volasoftware.tinder.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final JwtService jwtService;
 
-    public LoginController(UserServiceImpl userService,
+    public LoginController(UserService userService,
                            JwtService jwtService) {
         this.userService = userService;
         this.jwtService = jwtService;

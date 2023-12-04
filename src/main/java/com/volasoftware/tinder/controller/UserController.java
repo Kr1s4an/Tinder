@@ -1,7 +1,7 @@
 package com.volasoftware.tinder.controller;
 
 import com.volasoftware.tinder.dto.UserProfileDto;
-import com.volasoftware.tinder.service.UserServiceImpl;
+import com.volasoftware.tinder.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class UserController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
-    public UserController(UserServiceImpl userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
