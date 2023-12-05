@@ -15,8 +15,6 @@ import java.util.Optional;
 public interface UserService {
     List<User> getAll();
 
-    String getEmailContent(String token) throws IOException;
-
     void registerUser(UserDto userDto) throws IOException, MessagingException;
 
     User loginUser(LoginUserDto input);

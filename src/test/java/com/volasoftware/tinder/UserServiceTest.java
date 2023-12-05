@@ -8,25 +8,17 @@ import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
+import com.volasoftware.tinder.service.EmailSenderService;
 import com.volasoftware.tinder.service.UserServiceImpl;
-import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
-import jakarta.mail.Session;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -47,10 +39,7 @@ public class UserServiceTest {
     VerificationRepository verificationRepository;
 
     @Mock
-    JavaMailSender mailSender;
-
-    @Mock
-    ResourceLoader resourceLoader;
+    EmailSenderService emailSender;
 
     @Mock
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -81,36 +70,17 @@ public class UserServiceTest {
         verification.setCreatedDate(LocalDateTime.now());
         verification.setExpirationDate(LocalDateTime.now().plusDays(2));
 
-        String emailContent = "<html><body><h1>Test</h1></body></html>";
-
-        MimeMessage message = new MimeMessage((Session) null);
-        InternetAddress from = new InternetAddress("kristinmpetkov@gmail.com");
-        message.setFrom(from);
-        InternetAddress to = new InternetAddress("test@example.com");
-        message.setRecipient(Message.RecipientType.TO, to);
-        message.setSubject("Verification");
-        message.setContent(emailContent, "text/html; charset=utf-8");
+        emailSender.sendVerificationEmail(verification, user);
 
         when(userRepository.findOneByEmail(userDto.getEmail())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(new User());
         when(verificationRepository.saveAndFlush(any(Verification.class))).thenReturn(new Verification());
-        when(mailSender.createMimeMessage()).thenReturn(message);
-
-        File tempFile = File.createTempFile("registrationEmail", ".html");
-        try (FileWriter writer = new FileWriter(tempFile)) {
-            writer.write(emailContent);
-        }
-
-        when(resourceLoader.getResource("classpath:email/registrationEmail.html")).thenReturn(new FileSystemResource(tempFile));
 
         userServiceImpl.registerUser(userDto);
 
         verify(userRepository, times(1)).save(any(User.class));
         verify(verificationRepository, times(1)).saveAndFlush(any(Verification.class));
-        verify(mailSender, times(1)).send(any(MimeMessage.class));
-        verify(mailSender, times(1)).createMimeMessage();
-
-        tempFile.deleteOnExit();
+        verify(emailSender, times(1)).sendVerificationEmail(verification, user);
     }
 
     @Test
