@@ -1,7 +1,7 @@
 package com.volasoftware.tinder.controller;
 
-import com.volasoftware.tinder.jwt.JwtService;
 import com.volasoftware.tinder.dto.LoginUserDto;
+import com.volasoftware.tinder.jwt.JwtService;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.service.UserService;
 import jakarta.validation.Valid;
