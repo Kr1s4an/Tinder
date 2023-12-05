@@ -109,4 +109,22 @@ public class UserServiceTest {
 
         assertEquals("Email already exist!", exception.getMessage());
     }
+
+    @Test
+    public void testGetNewGeneratedPassword() throws MessagingException, IOException {
+        String email = "test@example.com";
+        String password = "12345678";
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+
+        when(userRepository.findOneByEmail(email)).thenReturn(Optional.of(user));
+        doNothing().when(emailSender).sendForgotPasswordEmail(user);
+
+        userServiceImpl.getNewGeneratedPassword(email);
+
+        verify(userRepository, times(1)).save(user);
+        verify(emailSender, times(1)).sendForgotPasswordEmail(user);
+    }
 }
