@@ -44,4 +44,22 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         message.setContent(getVerificationEmailContent(token.getToken()), "text/html; charset=utf-8");
         mailSender.send(message);
     }
+
+    public String getForgotPasswordEmailContent(String password) throws IOException {
+        Resource emailResource = resourceLoader.getResource("classpath:email/forgotPasswordEmail.html");
+        File emailFile = emailResource.getFile();
+        Path path = Path.of(emailFile.getPath());
+        String emailContent = Files.readString(path);
+
+        return emailContent.replace("{{password}}", password);
+    }
+
+    public void sendForgotPasswordEmail(User user) throws MessagingException, IOException {
+        MimeMessage message = mailSender.createMimeMessage();
+        message.setFrom(new InternetAddress("kristinmpetkov@gmail.com"));
+        message.setRecipients(MimeMessage.RecipientType.TO, user.getEmail());
+        message.setSubject("Forgot Password");
+        message.setContent(getForgotPasswordEmailContent(user.getPassword()), "text/html; charset=utf-8");
+        mailSender.send(message);
+    }
 }

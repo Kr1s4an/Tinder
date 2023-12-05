@@ -7,7 +7,11 @@ import jakarta.mail.MessagingException;
 import java.io.IOException;
 
 public interface EmailSenderService {
-    public String getVerificationEmailContent(String token) throws IOException;
+    String getVerificationEmailContent(String token) throws IOException;
 
-    public void sendVerificationEmail(Verification token, User user) throws MessagingException, IOException;
+    void sendVerificationEmail(Verification token, User user) throws MessagingException, IOException;
+
+    String getForgotPasswordEmailContent(String password) throws IOException;
+
+    void sendForgotPasswordEmail(User user) throws MessagingException, IOException;
 }

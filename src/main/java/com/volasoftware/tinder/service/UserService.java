@@ -28,4 +28,6 @@ public interface UserService {
     UserProfileDto getCurrentUserProfile();
 
     UserProfileDto editUserProfile(@RequestBody UserProfileDto userProfileDto);
+
+    void getNewGeneratedPassword(String email) throws MessagingException, IOException;
 }

@@ -11,6 +11,7 @@ import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.mail.MessagingException;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,5 +143,17 @@ public class UserServiceImpl implements UserService {
         user = userRepository.save(user);
 
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
+    }
+
+    public void getNewGeneratedPassword(String email) throws MessagingException, IOException {
+        User user = userRepository.findOneByEmail(email).orElseThrow(
+                () -> new UserDoesNotExistException("User with this email does not exist"));
+
+        String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+        String randomPassword = RandomStringUtils.random(8, characters);
+        user.setPassword(randomPassword);
+        userRepository.save(user);
+
+        emailSender.sendForgotPasswordEmail(user);
     }
 }
