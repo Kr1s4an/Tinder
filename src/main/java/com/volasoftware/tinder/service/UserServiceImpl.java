@@ -9,12 +9,13 @@ import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
+import com.volasoftware.tinder.utility.PasswordGenerator;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.mail.MessagingException;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,14 +36,20 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final VerificationRepository verificationRepository;
     private final EmailSenderService emailSender;
+    private final EmailContentService emailContent;
+
+    @Value("${localhost_verify}")
+    private String localHostVerify;
 
     public UserServiceImpl(
             UserRepository userRepository,
             VerificationRepository verificationRepository,
-            EmailSenderService emailSender) {
+            EmailSenderService emailSender,
+            EmailContentService emailContent) {
         this.userRepository = userRepository;
         this.verificationRepository = verificationRepository;
         this.emailSender = emailSender;
+        this.emailContent = emailContent;
     }
 
     @Override
@@ -74,7 +81,9 @@ public class UserServiceImpl implements UserService {
         token.setExpirationDate(LocalDateTime.now().plusDays(2));
         verificationRepository.saveAndFlush(token);
 
-        emailSender.sendVerificationEmail(token, user);
+        String content = emailContent.createContent(localHostVerify + token.getToken(), "classpath:email/registrationEmail.html");
+
+        emailSender.sendEmail(user, "Verification", content);
     }
 
     @Override
@@ -145,15 +154,14 @@ public class UserServiceImpl implements UserService {
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
     }
 
-    public void getNewGeneratedPassword(String email) throws MessagingException, IOException {
+    public void newPasswordForUser(String email) throws MessagingException, IOException {
         User user = userRepository.findOneByEmail(email).orElseThrow(
                 () -> new UserDoesNotExistException("User with this email does not exist"));
 
-        String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-        String randomPassword = RandomStringUtils.random(8, characters);
-        user.setPassword(randomPassword);
-        userRepository.save(user);
+        user.setPassword(PasswordGenerator.generatePassword());
+        String content = emailContent.createContent(user.getPassword(), "classpath:email/forgotPasswordEmail.html");
+        emailSender.sendEmail(user, "Forgot Password", content);
 
-        emailSender.sendForgotPasswordEmail(user);
+        userRepository.save(user);
     }
 }

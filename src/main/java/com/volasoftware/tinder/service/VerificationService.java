@@ -8,6 +8,7 @@ import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
 import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,13 +21,19 @@ public class VerificationService {
     private final VerificationRepository verificationRepository;
     private final UserRepository userRepository;
     private final EmailSenderService emailSender;
+    private final EmailContentService emailContent;
+
+    @Value("${localhost_verify}")
+    private String localHostVerify;
 
     public VerificationService(VerificationRepository verificationRepository,
                                UserRepository userRepository,
-                               EmailSenderService emailSender) {
+                               EmailSenderService emailSender,
+                               EmailContentService emailContent) {
         this.verificationRepository = verificationRepository;
         this.userRepository = userRepository;
         this.emailSender = emailSender;
+        this.emailContent = emailContent;
     }
 
     public void saveVerificationToken(Verification token) {
@@ -64,6 +71,8 @@ public class VerificationService {
         newToken.setExpirationDate(LocalDateTime.now().plusDays(2));
         verificationRepository.saveAndFlush(newToken);
 
-        emailSender.sendVerificationEmail(newToken, user);
+        String content =  emailContent.createContent(localHostVerify + newToken.getToken(), "classpath:email/registrationEmail.html");
+
+        emailSender.sendEmail(user, "Verification", content);
     }
 }

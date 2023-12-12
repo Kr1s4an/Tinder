@@ -36,7 +36,7 @@ public class UserController {
 
     @PostMapping("api/v1/users/password-recovery")
     public ResponseEntity forgotPassword(String email) throws MessagingException, IOException {
-        userService.getNewGeneratedPassword(email);
+        userService.newPasswordForUser(email);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

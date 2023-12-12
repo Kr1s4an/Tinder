@@ -2,14 +2,17 @@ package com.volasoftware.tinder;
 
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.exception.EmailAlreadyRegisteredException;
+import com.volasoftware.tinder.exception.UserDoesNotExistException;
 import com.volasoftware.tinder.model.Gender;
 import com.volasoftware.tinder.model.Role;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
+import com.volasoftware.tinder.service.EmailContentService;
 import com.volasoftware.tinder.service.EmailSenderService;
 import com.volasoftware.tinder.service.UserServiceImpl;
+import com.volasoftware.tinder.utility.PasswordGenerator;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +45,9 @@ public class UserServiceTest {
     EmailSenderService emailSender;
 
     @Mock
+    EmailContentService emailContent;
+
+    @Mock
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @InjectMocks
@@ -70,7 +76,9 @@ public class UserServiceTest {
         verification.setCreatedDate(LocalDateTime.now());
         verification.setExpirationDate(LocalDateTime.now().plusDays(2));
 
-        emailSender.sendVerificationEmail(verification, user);
+        emailSender.sendEmail(user,
+                "Subject",
+                "content");
 
         when(userRepository.findOneByEmail(userDto.getEmail())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(new User());
@@ -80,11 +88,11 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).save(any(User.class));
         verify(verificationRepository, times(1)).saveAndFlush(any(Verification.class));
-        verify(emailSender, times(1)).sendVerificationEmail(verification, user);
+        verify(emailSender, times(1)).sendEmail(user, "Subject", "content");
     }
 
     @Test
-    public void testRegisterUser_emailAlreadyRegistered() throws MessagingException, IOException {
+    public void testRegisterUser_emailAlreadyRegistered() {
         UserDto userDto = new UserDto();
         userDto.setEmail("test@example.com");
         userDto.setFirstName("Test");
@@ -111,20 +119,41 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetNewGeneratedPassword() throws MessagingException, IOException {
+    public void testNewPasswordForUser() throws MessagingException, IOException {
+        // Arrange
         String email = "test@example.com";
-        String password = "12345678";
-
         User user = new User();
         user.setEmail(email);
-        user.setPassword(password);
-
+        user.setPassword(PasswordGenerator.generatePassword());
+        String content = "content";
         when(userRepository.findOneByEmail(email)).thenReturn(Optional.of(user));
-        doNothing().when(emailSender).sendForgotPasswordEmail(user);
+        when(emailContent.createContent(anyString(),anyString())).thenReturn(content);
+        doNothing().when(emailSender).sendEmail(user,"Forgot Password", content);
+        when(userRepository.save(user)).thenReturn(user);
 
-        userServiceImpl.getNewGeneratedPassword(email);
+        // Act
+        userServiceImpl.newPasswordForUser(email);
 
+        // Assert
+        verify(userRepository, times(1)).findOneByEmail(email);
         verify(userRepository, times(1)).save(user);
-        verify(emailSender, times(1)).sendForgotPasswordEmail(user);
+        verify(emailSender, times(1)).sendEmail(user, "Forgot Password", "content");
+    }
+
+    @Test
+    public void testNewPasswordForUser_userDoesNotExist() throws MessagingException{
+        // Arrange
+        String email = "test@example.com";
+        when(userRepository.findOneByEmail(email)).thenReturn(Optional.empty());
+
+        // Act
+        assertThrows(UserDoesNotExistException.class, () -> {
+            userServiceImpl.newPasswordForUser(email);
+        });
+
+        // Assert
+        verify(userRepository, times(1)).findOneByEmail(email);
+        verify(userRepository, never()).save(any(User.class));
+        verify(emailSender, never()).sendEmail(any(User.class), anyString(), anyString());
     }
 }
