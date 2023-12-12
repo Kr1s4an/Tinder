@@ -1,5 +1,6 @@
 package com.volasoftware.tinder.service;
 
+import com.volasoftware.tinder.dto.ChangePasswordDto;
 import com.volasoftware.tinder.dto.LoginUserDto;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.dto.UserProfileDto;
@@ -158,10 +159,27 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findOneByEmail(email).orElseThrow(
                 () -> new UserDoesNotExistException("User with this email does not exist"));
 
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setPassword(PasswordGenerator.generatePassword());
         String content = emailContent.createContent(user.getPassword(), "classpath:email/forgotPasswordEmail.html");
         emailSender.sendEmail(user, "Forgot Password", content);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        userRepository.save(user);
+    }
+
+    public void editUserPassword(@RequestBody ChangePasswordDto changePasswordDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = authentication.getName();
+
+        User user = userRepository.findOneByEmail(currentUser).orElseThrow(() ->
+                new NotLoggedInException("You are not logged in!"));
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+        if (!passwordEncoder.matches(changePasswordDto.getConfirmNewPassword(),user.getPassword())) {
+            throw new PasswordDoesNotMatchException("Password does not match!");
+        }
         userRepository.save(user);
     }
 }

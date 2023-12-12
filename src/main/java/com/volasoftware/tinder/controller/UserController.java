@@ -1,5 +1,6 @@
 package com.volasoftware.tinder.controller;
 
+import com.volasoftware.tinder.dto.ChangePasswordDto;
 import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -37,6 +38,14 @@ public class UserController {
     @PostMapping("api/v1/users/password-recovery")
     public ResponseEntity forgotPassword(String email) throws MessagingException, IOException {
         userService.generateNewPasswordForUser(email);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PutMapping("api/v1/users/password")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity editPassword(@Valid @RequestBody ChangePasswordDto changePasswordDto){
+        userService.editUserPassword(changePasswordDto);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

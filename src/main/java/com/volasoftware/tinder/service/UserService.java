@@ -1,5 +1,6 @@
 package com.volasoftware.tinder.service;
 
+import com.volasoftware.tinder.dto.ChangePasswordDto;
 import com.volasoftware.tinder.dto.LoginUserDto;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.dto.UserProfileDto;
@@ -30,4 +31,6 @@ public interface UserService {
     UserProfileDto editUserProfile(@RequestBody UserProfileDto userProfileDto);
 
     void generateNewPasswordForUser(String email) throws MessagingException, IOException;
+
+    void editUserPassword(@RequestBody ChangePasswordDto changePasswordDto);
 }
