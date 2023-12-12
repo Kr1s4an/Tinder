@@ -76,9 +76,7 @@ public class UserServiceTest {
         verification.setCreatedDate(LocalDateTime.now());
         verification.setExpirationDate(LocalDateTime.now().plusDays(2));
 
-        emailSender.sendEmail(user,
-                "Subject",
-                "content");
+        emailSender.sendEmail(user, "Subject", "content");
 
         when(userRepository.findOneByEmail(userDto.getEmail())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(new User());

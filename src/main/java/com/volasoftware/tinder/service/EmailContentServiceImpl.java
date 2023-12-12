@@ -25,6 +25,6 @@ public class EmailContentServiceImpl implements EmailContentService{
         Path path = Path.of(emailFile.getPath());
         String emailContent = Files.readString(path);
 
-        return emailContent.replace("{{content}}", replacement);
+        return emailContent.replace("{{#target#}}", replacement);
     }
 }
