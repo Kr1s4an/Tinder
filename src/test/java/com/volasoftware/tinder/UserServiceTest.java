@@ -130,7 +130,7 @@ public class UserServiceTest {
         when(userRepository.save(user)).thenReturn(user);
 
         // Act
-        userServiceImpl.newPasswordForUser(email);
+        userServiceImpl.generateNewPasswordForUser(email);
 
         // Assert
         verify(userRepository, times(1)).findOneByEmail(email);
@@ -146,7 +146,7 @@ public class UserServiceTest {
 
         // Act
         assertThrows(UserDoesNotExistException.class, () -> {
-            userServiceImpl.newPasswordForUser(email);
+            userServiceImpl.generateNewPasswordForUser(email);
         });
 
         // Assert

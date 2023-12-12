@@ -154,7 +154,7 @@ public class UserServiceImpl implements UserService {
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
     }
 
-    public void newPasswordForUser(String email) throws MessagingException, IOException {
+    public void generateNewPasswordForUser(String email) throws MessagingException, IOException {
         User user = userRepository.findOneByEmail(email).orElseThrow(
                 () -> new UserDoesNotExistException("User with this email does not exist"));
 
