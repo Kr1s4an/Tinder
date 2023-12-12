@@ -8,9 +8,7 @@ import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,17 +20,20 @@ import java.util.UUID;
 public class VerificationService {
     private final VerificationRepository verificationRepository;
     private final UserRepository userRepository;
-    private final JavaMailSender mailSender;
-    private final UserService userService;
+    private final EmailSenderService emailSender;
+    private final EmailContentService emailContent;
+
+    @Value("${localhost_verify}")
+    private String localHostVerify;
 
     public VerificationService(VerificationRepository verificationRepository,
                                UserRepository userRepository,
-                               JavaMailSender mailSender,
-                               UserService userService) {
+                               EmailSenderService emailSender,
+                               EmailContentService emailContent) {
         this.verificationRepository = verificationRepository;
         this.userRepository = userRepository;
-        this.mailSender = mailSender;
-        this.userService = userService;
+        this.emailSender = emailSender;
+        this.emailContent = emailContent;
     }
 
     public void saveVerificationToken(Verification token) {
@@ -70,11 +71,8 @@ public class VerificationService {
         newToken.setExpirationDate(LocalDateTime.now().plusDays(2));
         verificationRepository.saveAndFlush(newToken);
 
-        MimeMessage message = mailSender.createMimeMessage();
-        message.setFrom(new InternetAddress("kristinmpetkov@gmail.com"));
-        message.setRecipients(MimeMessage.RecipientType.TO, user.getEmail());
-        message.setSubject("Verification");
-        message.setContent(userService.getEmailContent(newToken.getToken()), "text/html; charset=utf-8");
-        mailSender.send(message);
+        String content =  emailContent.createContent(localHostVerify + newToken.getToken(), "classpath:email/registrationEmail.html");
+
+        emailSender.sendEmail(user, "Verification", content);
     }
 }

@@ -3,10 +3,13 @@ package com.volasoftware.tinder.controller;
 import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 public class UserController {
@@ -29,5 +32,12 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<UserProfileDto> editUser(@Valid @RequestBody UserProfileDto userProfileDto) {
         return new ResponseEntity<>(userService.editUserProfile(userProfileDto), HttpStatus.OK);
+    }
+
+    @PostMapping("api/v1/users/password-recovery")
+    public ResponseEntity forgotPassword(String email) throws MessagingException, IOException {
+        userService.generateNewPasswordForUser(email);
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }

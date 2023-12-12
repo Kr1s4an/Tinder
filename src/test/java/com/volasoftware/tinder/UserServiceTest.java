@@ -2,31 +2,26 @@ package com.volasoftware.tinder;
 
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.exception.EmailAlreadyRegisteredException;
+import com.volasoftware.tinder.exception.UserDoesNotExistException;
 import com.volasoftware.tinder.model.Gender;
 import com.volasoftware.tinder.model.Role;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
+import com.volasoftware.tinder.service.EmailContentService;
+import com.volasoftware.tinder.service.EmailSenderService;
 import com.volasoftware.tinder.service.UserServiceImpl;
-import jakarta.mail.Message;
+import com.volasoftware.tinder.utility.PasswordGenerator;
 import jakarta.mail.MessagingException;
-import jakarta.mail.Session;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -47,10 +42,10 @@ public class UserServiceTest {
     VerificationRepository verificationRepository;
 
     @Mock
-    JavaMailSender mailSender;
+    EmailSenderService emailSender;
 
     @Mock
-    ResourceLoader resourceLoader;
+    EmailContentService emailContent;
 
     @Mock
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -81,40 +76,21 @@ public class UserServiceTest {
         verification.setCreatedDate(LocalDateTime.now());
         verification.setExpirationDate(LocalDateTime.now().plusDays(2));
 
-        String emailContent = "<html><body><h1>Test</h1></body></html>";
-
-        MimeMessage message = new MimeMessage((Session) null);
-        InternetAddress from = new InternetAddress("kristinmpetkov@gmail.com");
-        message.setFrom(from);
-        InternetAddress to = new InternetAddress("test@example.com");
-        message.setRecipient(Message.RecipientType.TO, to);
-        message.setSubject("Verification");
-        message.setContent(emailContent, "text/html; charset=utf-8");
+        emailSender.sendEmail(user, "Subject", "content");
 
         when(userRepository.findOneByEmail(userDto.getEmail())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(new User());
         when(verificationRepository.saveAndFlush(any(Verification.class))).thenReturn(new Verification());
-        when(mailSender.createMimeMessage()).thenReturn(message);
-
-        File tempFile = File.createTempFile("registrationEmail", ".html");
-        try (FileWriter writer = new FileWriter(tempFile)) {
-            writer.write(emailContent);
-        }
-
-        when(resourceLoader.getResource("classpath:email/registrationEmail.html")).thenReturn(new FileSystemResource(tempFile));
 
         userServiceImpl.registerUser(userDto);
 
         verify(userRepository, times(1)).save(any(User.class));
         verify(verificationRepository, times(1)).saveAndFlush(any(Verification.class));
-        verify(mailSender, times(1)).send(any(MimeMessage.class));
-        verify(mailSender, times(1)).createMimeMessage();
-
-        tempFile.deleteOnExit();
+        verify(emailSender, times(1)).sendEmail(user, "Subject", "content");
     }
 
     @Test
-    public void testRegisterUser_emailAlreadyRegistered() throws MessagingException, IOException {
+    public void testRegisterUser_emailAlreadyRegistered() {
         UserDto userDto = new UserDto();
         userDto.setEmail("test@example.com");
         userDto.setFirstName("Test");
@@ -138,5 +114,44 @@ public class UserServiceTest {
         );
 
         assertEquals("Email already exist!", exception.getMessage());
+    }
+
+    @Test
+    public void testNewPasswordForUser() throws MessagingException, IOException {
+        // Arrange
+        String email = "test@example.com";
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(PasswordGenerator.generatePassword());
+        String content = "content";
+        when(userRepository.findOneByEmail(email)).thenReturn(Optional.of(user));
+        when(emailContent.createContent(anyString(),anyString())).thenReturn(content);
+        doNothing().when(emailSender).sendEmail(user,"Forgot Password", content);
+        when(userRepository.save(user)).thenReturn(user);
+
+        // Act
+        userServiceImpl.generateNewPasswordForUser(email);
+
+        // Assert
+        verify(userRepository, times(1)).findOneByEmail(email);
+        verify(userRepository, times(1)).save(user);
+        verify(emailSender, times(1)).sendEmail(user, "Forgot Password", "content");
+    }
+
+    @Test
+    public void testNewPasswordForUser_userDoesNotExist() throws MessagingException{
+        // Arrange
+        String email = "test@example.com";
+        when(userRepository.findOneByEmail(email)).thenReturn(Optional.empty());
+
+        // Act
+        assertThrows(UserDoesNotExistException.class, () -> {
+            userServiceImpl.generateNewPasswordForUser(email);
+        });
+
+        // Assert
+        verify(userRepository, times(1)).findOneByEmail(email);
+        verify(userRepository, never()).save(any(User.class));
+        verify(emailSender, never()).sendEmail(any(User.class), anyString(), anyString());
     }
 }

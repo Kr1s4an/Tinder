@@ -9,16 +9,13 @@ import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
+import com.volasoftware.tinder.utility.PasswordGenerator;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,48 +23,38 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
     private final VerificationRepository verificationRepository;
-    private final ResourceLoader resourceLoader;
-    private final JavaMailSender mailSender;
+    private final EmailSenderService emailSender;
+    private final EmailContentService emailContent;
+
+    @Value("${localhost_verify}")
+    private String localHostVerify;
 
     public UserServiceImpl(
             UserRepository userRepository,
             VerificationRepository verificationRepository,
-            ResourceLoader resourceLoader,
-            JavaMailSender mailSender) {
+            EmailSenderService emailSender,
+            EmailContentService emailContent) {
         this.userRepository = userRepository;
         this.verificationRepository = verificationRepository;
-        this.resourceLoader = resourceLoader;
-        this.mailSender = mailSender;
-    }
-
-@Override
-    public List<User> getAll() {
-        return userRepository.findAll();
+        this.emailSender = emailSender;
+        this.emailContent = emailContent;
     }
 
     @Override
-    public String getEmailContent(String token) throws IOException {
-        Resource emailResource = resourceLoader.getResource("classpath:email/registrationEmail.html");
-        File emailFile = emailResource.getFile();
-        Path path = Path.of(emailFile.getPath());
-        String emailContent = Files.readString(path);
-
-        return emailContent.replace("{{token}}", "http://localhost:8080/verify/" + token);
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 
     @Override
@@ -94,12 +81,9 @@ public class UserServiceImpl implements UserService{
         token.setExpirationDate(LocalDateTime.now().plusDays(2));
         verificationRepository.saveAndFlush(token);
 
-        MimeMessage message = mailSender.createMimeMessage();
-        message.setFrom(new InternetAddress("kristinmpetkov@gmail.com"));
-        message.setRecipients(MimeMessage.RecipientType.TO, user.getEmail());
-        message.setSubject("Verification");
-        message.setContent(getEmailContent(token.getToken()), "text/html; charset=utf-8");
-        mailSender.send(message);
+        String content = emailContent.createContent(localHostVerify + token.getToken(), "classpath:email/registrationEmail.html");
+
+        emailSender.sendEmail(user, "Verification", content);
     }
 
     @Override
@@ -168,5 +152,16 @@ public class UserServiceImpl implements UserService{
         user = userRepository.save(user);
 
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
+    }
+
+    public void generateNewPasswordForUser(String email) throws MessagingException, IOException {
+        User user = userRepository.findOneByEmail(email).orElseThrow(
+                () -> new UserDoesNotExistException("User with this email does not exist"));
+
+        user.setPassword(PasswordGenerator.generatePassword());
+        String content = emailContent.createContent(user.getPassword(), "classpath:email/forgotPasswordEmail.html");
+        emailSender.sendEmail(user, "Forgot Password", content);
+
+        userRepository.save(user);
     }
 }
