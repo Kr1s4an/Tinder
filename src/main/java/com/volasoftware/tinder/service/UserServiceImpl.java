@@ -124,7 +124,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileDto editUserProfile(@RequestBody UserProfileDto userProfileDto) {
+    public UserProfileDto editUserProfile(UserProfileDto userProfileDto) {
         User user = loggedUser();
 
         if (StringUtils.isNotEmpty(userProfileDto.getFirstName())) {
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
         emailSender.sendEmail(user.getEmail(), "Forgot Password", content);
     }
 
-    public void editUserPassword(@RequestBody ChangePasswordDto changePasswordDto) {
+    public void editUserPassword(ChangePasswordDto changePasswordDto) {
         User user = loggedUser();
 
         if (changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmNewPassword())) {

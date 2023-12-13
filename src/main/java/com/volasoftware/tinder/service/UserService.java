@@ -28,9 +28,9 @@ public interface UserService {
 
     UserProfileDto getCurrentUserProfile();
 
-    UserProfileDto editUserProfile(@RequestBody UserProfileDto userProfileDto);
+    UserProfileDto editUserProfile(UserProfileDto userProfileDto);
 
     void generateNewPasswordForUser(String email) throws MessagingException, IOException;
 
-    void editUserPassword(@RequestBody ChangePasswordDto changePasswordDto);
+    void editUserPassword(ChangePasswordDto changePasswordDto);
 }
