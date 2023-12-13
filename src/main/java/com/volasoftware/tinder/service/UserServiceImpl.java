@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileDto getCurrentUserProfile() {
-       User user = getLoggedUser();
+        User user = getLoggedUser();
 
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
     }
@@ -166,7 +166,8 @@ public class UserServiceImpl implements UserService {
         user.setPassword(PasswordEncoder.encodePassword(changePasswordDto.getNewPassword()));
         userRepository.save(user);
     }
-    private User getLoggedUser(){
+
+    private User getLoggedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = authentication.getName();
 
