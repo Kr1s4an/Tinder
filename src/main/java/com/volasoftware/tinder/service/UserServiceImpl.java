@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
 
         String content = emailContent.createContent(localHostVerify + token.getToken(), "classpath:email/registrationEmail.html");
 
-        emailSender.sendEmail(user, "Verification", content);
+        emailSender.sendEmail(user.getEmail(), "Verification", content);
     }
 
     @Override
@@ -161,11 +161,11 @@ public class UserServiceImpl implements UserService {
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setPassword(PasswordGenerator.generatePassword());
-        String content = emailContent.createContent(user.getPassword(), "classpath:email/forgotPasswordEmail.html");
-        emailSender.sendEmail(user, "Forgot Password", content);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         userRepository.save(user);
+
+        String content = emailContent.createContent(user.getPassword(), "classpath:email/forgotPasswordEmail.html");
+        emailSender.sendEmail(user.getEmail(), "Forgot Password", content);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
     public void editUserPassword(@RequestBody ChangePasswordDto changePasswordDto) {

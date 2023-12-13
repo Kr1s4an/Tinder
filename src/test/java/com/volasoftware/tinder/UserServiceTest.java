@@ -76,7 +76,7 @@ public class UserServiceTest {
         verification.setCreatedDate(LocalDateTime.now());
         verification.setExpirationDate(LocalDateTime.now().plusDays(2));
 
-        emailSender.sendEmail(user, "Subject", "content");
+        emailSender.sendEmail(user.getEmail(), "Subject", "content");
 
         when(userRepository.findOneByEmail(userDto.getEmail())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(new User());
@@ -86,7 +86,7 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).save(any(User.class));
         verify(verificationRepository, times(1)).saveAndFlush(any(Verification.class));
-        verify(emailSender, times(1)).sendEmail(user, "Subject", "content");
+        verify(emailSender, times(1)).sendEmail(user.getEmail(), "Subject", "content");
     }
 
     @Test
@@ -126,7 +126,7 @@ public class UserServiceTest {
         String content = "content";
         when(userRepository.findOneByEmail(email)).thenReturn(Optional.of(user));
         when(emailContent.createContent(anyString(),anyString())).thenReturn(content);
-        doNothing().when(emailSender).sendEmail(user,"Forgot Password", content);
+        doNothing().when(emailSender).sendEmail(user.getEmail(),"Forgot Password", content);
         when(userRepository.save(user)).thenReturn(user);
 
         // Act
@@ -135,7 +135,7 @@ public class UserServiceTest {
         // Assert
         verify(userRepository, times(1)).findOneByEmail(email);
         verify(userRepository, times(1)).save(user);
-        verify(emailSender, times(1)).sendEmail(user, "Forgot Password", "content");
+        verify(emailSender, times(1)).sendEmail(user.getEmail(), "Forgot Password", "content");
     }
 
     @Test
@@ -152,6 +152,6 @@ public class UserServiceTest {
         // Assert
         verify(userRepository, times(1)).findOneByEmail(email);
         verify(userRepository, never()).save(any(User.class));
-        verify(emailSender, never()).sendEmail(any(User.class), anyString(), anyString());
+        verify(emailSender, never()).sendEmail(anyString(), anyString(), anyString());
     }
 }
