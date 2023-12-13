@@ -160,12 +160,12 @@ public class UserServiceImpl implements UserService {
                 () -> new UserDoesNotExistException("User with this email does not exist"));
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        user.setPassword(PasswordGenerator.generatePassword());
+        String generatedPassword = PasswordGenerator.generatePassword();
+        user.setPassword(passwordEncoder.encode(generatedPassword));
         userRepository.save(user);
 
-        String content = emailContent.createContent(user.getPassword(), "classpath:email/forgotPasswordEmail.html");
+        String content = emailContent.createContent(generatedPassword, "classpath:email/forgotPasswordEmail.html");
         emailSender.sendEmail(user.getEmail(), "Forgot Password", content);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
     public void editUserPassword(@RequestBody ChangePasswordDto changePasswordDto) {
