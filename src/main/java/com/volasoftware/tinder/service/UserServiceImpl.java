@@ -22,7 +22,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -165,7 +164,6 @@ public class UserServiceImpl implements UserService {
             throw new PasswordDoesNotMatchException("Password does not match!");
         }
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setPassword(PasswordEncoder.encodePassword(changePasswordDto.getNewPassword()));
         userRepository.save(user);
     }
