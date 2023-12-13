@@ -12,7 +12,6 @@ import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
 import com.volasoftware.tinder.utility.PasswordEncoder;
 import com.volasoftware.tinder.utility.PasswordGenerator;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -118,14 +117,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileDto getCurrentUserProfile() {
-       User user = loggedUser();
+       User user = getLoggedUser();
 
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
     }
 
     @Override
     public UserProfileDto updateUserProfile(UserProfileDto userProfileDto) {
-        User user = loggedUser();
+        User user = getLoggedUser();
 
         if (StringUtils.isNotEmpty(userProfileDto.getFirstName())) {
             user.setFirstName(userProfileDto.getFirstName());
@@ -158,7 +157,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void updateUserPassword(ChangePasswordDto changePasswordDto) {
-        User user = loggedUser();
+        User user = getLoggedUser();
 
         if (changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmNewPassword())) {
             throw new PasswordDoesNotMatchException("Password does not match!");
@@ -167,7 +166,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(PasswordEncoder.encodePassword(changePasswordDto.getNewPassword()));
         userRepository.save(user);
     }
-    private User loggedUser(){
+    private User getLoggedUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = authentication.getName();
 
