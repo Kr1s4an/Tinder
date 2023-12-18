@@ -33,7 +33,7 @@ public interface UserService {
 
     void updateUserPassword(ChangePasswordDto changePasswordDto);
 
-    void addFriend(Long userId,Long friendId);
+    void addFriend(Long friendId);
 
-    void removeFriend(Long userId,Long friendId);
+    void removeFriend(Long friendId);
 }

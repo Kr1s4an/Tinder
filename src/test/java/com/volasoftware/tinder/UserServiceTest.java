@@ -14,11 +14,16 @@ import com.volasoftware.tinder.service.EmailSenderService;
 import com.volasoftware.tinder.service.UserServiceImpl;
 import com.volasoftware.tinder.utility.PasswordGenerator;
 import jakarta.mail.MessagingException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -28,8 +33,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -49,8 +53,20 @@ public class UserServiceTest {
     @Mock
     EmailContentService emailContent;
 
+    @Mock
+    Authentication authentication;
+
     @InjectMocks
     private UserServiceImpl userServiceImpl;
+
+    @BeforeEach
+    public void setUp() {
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+    }
 
     @Test
     public void testUserServiceRegisterNewUserAndReturnTheUser() throws MessagingException, IOException {
@@ -156,49 +172,47 @@ public class UserServiceTest {
 
     @Test
     public void testAddFriend() {
-        // Arrange
-        Long userId = 1L;
+        //Arrange
+        User loggedUser = new User();
+        loggedUser.setId(1L);
+        loggedUser.setFriends(new HashSet<>());
+
         Long friendId = 2L;
-        User user = new User();
-        user.setId(userId);
         User friend = new User();
         friend.setId(friendId);
-        Set<User> friends = new HashSet<>();
-        friends.add(friend);
-        user.setFriends(friends);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
         when(userRepository.findById(friendId)).thenReturn(Optional.of(friend));
 
         // Act
-        userServiceImpl.addFriend(userId, friendId);
+        userServiceImpl.addFriend(friendId);
 
         // Assert
-        verify(userRepository, times(1)).findById(userId);
         verify(userRepository, times(1)).findById(friendId);
-        verify(userRepository, times(1)).save(user);
+        verify(userRepository, times(1)).save(loggedUser);
+        assert loggedUser.getFriends().contains(friend);
     }
 
     @Test
     public void testRemoveFriend() {
-        // Arrange
-        Long userId = 1L;
-        Long friendId = 2L;
-        User user = new User();
-        user.setId(userId);
-        User friend = new User();
-        friend.setId(friendId);
+        //Arrange
+        User loggedUser = new User();
+        loggedUser.setId(1L);
+
+        User friendToRemove = new User();
+        friendToRemove.setId(2L);
         Set<User> friends = new HashSet<>();
-        friends.add(friend);
-        user.setFriends(friends);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.findById(friendId)).thenReturn(Optional.of(friend));
+        friends.add(friendToRemove);
+        loggedUser.setFriends(friends);
 
-        // Act
-        userServiceImpl.removeFriend(userId, friendId);
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findById(friendToRemove.getId())).thenReturn(Optional.of(friendToRemove));
 
-        // Assert
-        verify(userRepository, times(1)).findById(userId);
-        verify(userRepository, times(1)).findById(friendId);
-        verify(userRepository, times(1)).save(user);
+        //Act
+        userServiceImpl.removeFriend(friendToRemove.getId());
+
+        //Assert
+        verify(userRepository, times(1)).save(loggedUser);
+        assertFalse(loggedUser.getFriends().contains(friendToRemove));
     }
 }
