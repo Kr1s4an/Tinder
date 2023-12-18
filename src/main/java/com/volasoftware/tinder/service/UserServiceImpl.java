@@ -41,6 +41,14 @@ public class UserServiceImpl implements UserService {
     @Value("${localhost_verify}")
     private String localHostVerify;
 
+    private User getLoggedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = authentication.getName();
+
+        return userRepository.findOneByEmail(currentUser).orElseThrow(() ->
+                new NotLoggedInException("You are not logged in!"));
+    }
+
     public UserServiceImpl(
             UserRepository userRepository,
             VerificationRepository verificationRepository,
@@ -167,11 +175,17 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    private User getLoggedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUser = authentication.getName();
+    public void addFriend(Long userId,Long friendId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User does not exist with the ID: " + userId));
+        User friend = userRepository.findById(friendId).orElseThrow(() -> new ResourceNotFoundException("User does not exist with the ID: " + friendId));
+        user.getFriends().add(friend);
+        userRepository.save(user);
+    }
 
-        return userRepository.findOneByEmail(currentUser).orElseThrow(() ->
-                new NotLoggedInException("You are not logged in!"));
+    public void removeFriend(Long userId,Long friendId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User does not exist with the ID: " + userId));
+        User friend = userRepository.findById(friendId).orElseThrow(() -> new ResourceNotFoundException("User does not exist with the ID: " + friendId));
+        user.getFriends().remove(friend);
+        userRepository.save(user);
     }
 }
