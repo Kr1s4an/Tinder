@@ -24,7 +24,9 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -153,5 +155,53 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findOneByEmail(email);
         verify(userRepository, never()).save(any(User.class));
         verify(emailSender, never()).sendEmail(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    public void testAddFriend() {
+        // Arrange
+        Long userId = 1L;
+        Long friendId = 2L;
+        User user = new User();
+        user.setId(userId);
+        User friend = new User();
+        friend.setId(friendId);
+        Set<User> friends = new HashSet<>();
+        friends.add(friend);
+        user.setFriends(friends);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(friendId)).thenReturn(Optional.of(friend));
+
+        // Act
+        userServiceImpl.addFriend(userId, friendId);
+
+        // Assert
+        verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, times(1)).findById(friendId);
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    public void testRemoveFriend() {
+        // Arrange
+        Long userId = 1L;
+        Long friendId = 2L;
+        User user = new User();
+        user.setId(userId);
+        User friend = new User();
+        friend.setId(friendId);
+        Set<User> friends = new HashSet<>();
+        friends.add(friend);
+        user.setFriends(friends);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(friendId)).thenReturn(Optional.of(friend));
+
+        // Act
+        userServiceImpl.removeFriend(userId, friendId);
+
+        // Assert
+        verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, times(1)).findById(friendId);
+        verify(userRepository, times(1)).save(user);
     }
 }
