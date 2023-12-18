@@ -20,10 +20,10 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         this.mailSender = mailSender;
     }
 
-    public void sendEmail(User user, String subject, String content) throws MessagingException {
+    public void sendEmail(String email, String subject, String content) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.setFrom(new InternetAddress(emailFrom));
-        message.setRecipients(MimeMessage.RecipientType.TO, user.getEmail());
+        message.setRecipients(MimeMessage.RecipientType.TO, email);
         message.setSubject(subject);
         message.setContent(content, "text/html; charset=utf-8");
         mailSender.send(message);

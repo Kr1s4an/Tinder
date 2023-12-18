@@ -1,5 +1,6 @@
 package com.volasoftware.tinder.service;
 
+import com.volasoftware.tinder.dto.ChangePasswordDto;
 import com.volasoftware.tinder.dto.LoginUserDto;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.dto.UserProfileDto;
@@ -9,8 +10,8 @@ import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
+import com.volasoftware.tinder.utility.PasswordEncoder;
 import com.volasoftware.tinder.utility.PasswordGenerator;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -68,8 +68,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPassword(encoder.encode(userDto.getPassword()));
+        user.setPassword(PasswordEncoder.encodePassword(userDto.getPassword()));
         user.setGender(userDto.getGender());
         user.setRole(Role.USER);
         userRepository.save(user);
@@ -83,15 +82,14 @@ public class UserServiceImpl implements UserService {
 
         String content = emailContent.createContent(localHostVerify + token.getToken(), "classpath:email/registrationEmail.html");
 
-        emailSender.sendEmail(user, "Verification", content);
+        emailSender.sendEmail(user.getEmail(), "Verification", content);
     }
 
     @Override
     public User loginUser(LoginUserDto input) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user = userRepository.findOneByEmail(input.getEmail()).orElseThrow(
                 () -> new UserDoesNotExistException("User with this email does not exist"));
-        if (!passwordEncoder.matches(input.getPassword(),
+        if (!PasswordEncoder.equals(input.getPassword(),
                 user.getPassword())) {
             throw new PasswordDoesNotMatchException("Password does not match");
         }
@@ -119,22 +117,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileDto getCurrentUserProfile() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUser = authentication.getName();
-
-        User user = userRepository.findOneByEmail(currentUser).orElseThrow(() ->
-                new NotLoggedInException("You are not logged in!"));
+        User user = getLoggedUser();
 
         return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
     }
 
     @Override
-    public UserProfileDto editUserProfile(@RequestBody UserProfileDto userProfileDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUser = authentication.getName();
-
-        User user = userRepository.findOneByEmail(currentUser).orElseThrow(() ->
-                new NotLoggedInException("You are not logged in!"));
+    public UserProfileDto updateUserProfile(UserProfileDto userProfileDto) {
+        User user = getLoggedUser();
 
         if (StringUtils.isNotEmpty(userProfileDto.getFirstName())) {
             user.setFirstName(userProfileDto.getFirstName());
@@ -158,10 +148,30 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findOneByEmail(email).orElseThrow(
                 () -> new UserDoesNotExistException("User with this email does not exist"));
 
-        user.setPassword(PasswordGenerator.generatePassword());
-        String content = emailContent.createContent(user.getPassword(), "classpath:email/forgotPasswordEmail.html");
-        emailSender.sendEmail(user, "Forgot Password", content);
-
+        String generatedPassword = PasswordGenerator.generatePassword();
+        user.setPassword(PasswordEncoder.encodePassword(generatedPassword));
         userRepository.save(user);
+
+        String content = emailContent.createContent(generatedPassword, "classpath:email/forgotPasswordEmail.html");
+        emailSender.sendEmail(user.getEmail(), "Forgot Password", content);
+    }
+
+    public void updateUserPassword(ChangePasswordDto changePasswordDto) {
+        User user = getLoggedUser();
+
+        if (changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmNewPassword())) {
+            throw new PasswordDoesNotMatchException("Password does not match!");
+        }
+
+        user.setPassword(PasswordEncoder.encodePassword(changePasswordDto.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    private User getLoggedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = authentication.getName();
+
+        return userRepository.findOneByEmail(currentUser).orElseThrow(() ->
+                new NotLoggedInException("You are not logged in!"));
     }
 }

@@ -31,6 +31,8 @@ public class User extends Auditable<String> implements UserDetails {
     @Column(name = "ROLE")
     private Role role;
 
+    private User friend;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

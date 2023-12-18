@@ -1,10 +1,10 @@
 package com.volasoftware.tinder.service;
 
+import com.volasoftware.tinder.dto.ChangePasswordDto;
 import com.volasoftware.tinder.dto.LoginUserDto;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.model.User;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.mail.MessagingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -27,7 +27,9 @@ public interface UserService {
 
     UserProfileDto getCurrentUserProfile();
 
-    UserProfileDto editUserProfile(@RequestBody UserProfileDto userProfileDto);
+    UserProfileDto updateUserProfile(UserProfileDto userProfileDto);
 
     void generateNewPasswordForUser(String email) throws MessagingException, IOException;
+
+    void updateUserPassword(ChangePasswordDto changePasswordDto);
 }

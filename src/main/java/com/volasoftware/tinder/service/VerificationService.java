@@ -73,6 +73,6 @@ public class VerificationService {
 
         String content =  emailContent.createContent(localHostVerify + newToken.getToken(), "classpath:email/registrationEmail.html");
 
-        emailSender.sendEmail(user, "Verification", content);
+        emailSender.sendEmail(user.getEmail(), "Verification", content);
     }
 }
