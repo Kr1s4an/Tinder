@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -30,8 +31,8 @@ public class User extends Auditable<String> implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
     private Role role;
-
-    private User friend;
+    @ManyToMany(mappedBy = "friends")
+    private Set<User> friends;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -125,5 +126,13 @@ public class User extends Auditable<String> implements UserDetails {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Set<User> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Set<User> friends) {
+        this.friends = friends;
     }
 }
