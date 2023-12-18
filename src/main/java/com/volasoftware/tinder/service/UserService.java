@@ -32,4 +32,8 @@ public interface UserService {
     void generateNewPasswordForUser(String email) throws MessagingException, IOException;
 
     void updateUserPassword(ChangePasswordDto changePasswordDto);
+
+    void addFriend(Long friendId);
+
+    void removeFriend(Long friendId);
 }
