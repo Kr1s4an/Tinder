@@ -49,9 +49,6 @@ public class UserServiceTest {
     @Mock
     EmailContentService emailContent;
 
-    @Mock
-    BCryptPasswordEncoder bCryptPasswordEncoder;
-
     @InjectMocks
     private UserServiceImpl userServiceImpl;
 
