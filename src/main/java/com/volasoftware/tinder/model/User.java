@@ -31,7 +31,11 @@ public class User extends Auditable<String> implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
     private Role role;
-    @ManyToMany(mappedBy = "friends")
+    @ManyToMany
+    @JoinTable(
+            name = "friend",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id"))
     private Set<User> friends;
     private Integer age;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)

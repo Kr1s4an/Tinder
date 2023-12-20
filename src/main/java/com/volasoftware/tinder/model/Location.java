@@ -3,6 +3,7 @@ package com.volasoftware.tinder.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "location")
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

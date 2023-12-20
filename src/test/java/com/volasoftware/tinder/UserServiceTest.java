@@ -59,15 +59,6 @@ public class UserServiceTest {
     @InjectMocks
     private UserServiceImpl userServiceImpl;
 
-    @BeforeEach
-    public void setUp() {
-        SecurityContext securityContext = mock(SecurityContext.class);
-        SecurityContextHolder.setContext(securityContext);
-
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("testUser");
-    }
-
     @Test
     public void testUserServiceRegisterNewUserAndReturnTheUser() throws MessagingException, IOException {
         UserDto userDto = new UserDto();
@@ -140,8 +131,8 @@ public class UserServiceTest {
         user.setPassword(PasswordGenerator.generatePassword());
         String content = "content";
         when(userRepository.findOneByEmail(email)).thenReturn(Optional.of(user));
-        when(emailContent.createContent(anyString(),anyString())).thenReturn(content);
-        doNothing().when(emailSender).sendEmail(user.getEmail(),"Forgot Password", content);
+        when(emailContent.createContent(anyString(), anyString())).thenReturn(content);
+        doNothing().when(emailSender).sendEmail(user.getEmail(), "Forgot Password", content);
         when(userRepository.save(user)).thenReturn(user);
 
         // Act
@@ -154,7 +145,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testNewPasswordForUser_userDoesNotExist() throws MessagingException{
+    public void testNewPasswordForUser_userDoesNotExist() throws MessagingException {
         // Arrange
         String email = "test@example.com";
         when(userRepository.findOneByEmail(email)).thenReturn(Optional.empty());
@@ -181,8 +172,13 @@ public class UserServiceTest {
         User friend = new User();
         friend.setId(friendId);
 
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+
         when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
         when(userRepository.findById(friendId)).thenReturn(Optional.of(friend));
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
 
         // Act
         userServiceImpl.addFriend(friendId);
@@ -205,8 +201,13 @@ public class UserServiceTest {
         friends.add(friendToRemove);
         loggedUser.setFriends(friends);
 
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+
         when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
         when(userRepository.findById(friendToRemove.getId())).thenReturn(Optional.of(friendToRemove));
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
 
         //Act
         userServiceImpl.removeFriend(friendToRemove.getId());
