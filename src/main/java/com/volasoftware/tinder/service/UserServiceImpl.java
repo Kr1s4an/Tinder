@@ -7,9 +7,11 @@ import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.exception.*;
 import com.volasoftware.tinder.model.Role;
 import com.volasoftware.tinder.model.User;
+import com.volasoftware.tinder.model.UserType;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
+import com.volasoftware.tinder.utility.LinkFriends;
 import com.volasoftware.tinder.utility.PasswordEncoder;
 import com.volasoftware.tinder.utility.PasswordGenerator;
 import jakarta.mail.MessagingException;
@@ -187,5 +189,33 @@ public class UserServiceImpl implements UserService {
         User friend = userRepository.findById(friendId).orElseThrow(() -> new ResourceNotFoundException("User does not exist with the ID: " + friendId));
         user.getFriends().remove(friend);
         userRepository.save(user);
+    }
+
+    public List<User> getUsersByUserType(UserType userType) {
+        return userRepository.findByType(userType);
+    }
+
+    public void linkRandomFriendsForNonBotUsers() {
+        List<User> nonBotUsers = userRepository.findByType(UserType.REAL);
+        List<User> botUsers = userRepository.findByType(UserType.BOT);
+
+        LinkFriends.linkRandomFriendsForNonBotUsers(nonBotUsers, botUsers);
+
+        for (User user : nonBotUsers) {
+            userRepository.save(user);
+        }
+    }
+
+    public void linkRandomFriendsForRequestedUser(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User requestedUser = optionalUser.orElse(null);
+
+        List<User> botUsers = userRepository.findByType(UserType.BOT);
+
+        LinkFriends.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
+
+        if (requestedUser != null) {
+            userRepository.save(requestedUser);
+        }
     }
 }

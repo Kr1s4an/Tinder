@@ -5,6 +5,7 @@ import com.volasoftware.tinder.dto.LoginUserDto;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.model.User;
+import com.volasoftware.tinder.model.UserType;
 import jakarta.mail.MessagingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -36,4 +37,10 @@ public interface UserService {
     void addFriend(Long friendId);
 
     void removeFriend(Long friendId);
+
+    List<User> getUsersByUserType(UserType userType);
+
+    void linkRandomFriendsForNonBotUsers();
+
+    void linkRandomFriendsForRequestedUser(Long userId);
 }
