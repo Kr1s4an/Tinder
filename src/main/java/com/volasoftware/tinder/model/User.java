@@ -31,8 +31,16 @@ public class User extends Auditable<String> implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
     private Role role;
-    @ManyToMany(mappedBy = "friends")
+    @ManyToMany
+    @JoinTable(
+            name = "friend",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "FRIEND_ID"))
     private Set<User> friends;
+    private Integer age;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Location location;
+    private UserType type;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -134,5 +142,29 @@ public class User extends Auditable<String> implements UserDetails {
 
     public void setFriends(Set<User> friends) {
         this.friends = friends;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public UserType getType() {
+        return type;
+    }
+
+    public void setType(UserType type) {
+        this.type = type;
     }
 }
