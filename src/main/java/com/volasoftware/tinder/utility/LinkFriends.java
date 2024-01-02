@@ -39,7 +39,7 @@ public class LinkFriends {
     }
 
     public static void linkRandomFriendsForRequestedUser(User requestedUser, List<User> botUsers) {
-        if (requestedUser != null && requestedUser.getType() != UserType.BOT) {
+        if (requestedUser != null && requestedUser.getType() != UserType.BOT && !botUsers.isEmpty()) {
             Random random = new Random();
             int randomNumberOfFriends = random.nextInt(botUsers.size());
 
