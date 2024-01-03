@@ -10,11 +10,14 @@ import jakarta.mail.MessagingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
     List<User> getAll();
+
+    List<User> saveAll(Collection<User> users);
 
     void registerUser(UserDto userDto) throws IOException, MessagingException;
 
@@ -40,7 +43,6 @@ public interface UserService {
 
     List<User> getUsersByUserType(UserType userType);
 
-    List<User> linkRandomFriendsForNonBotUsers();
+    void linkRandomFriendsForNonBotUsers(List<User> nonBotUsers, List<User> botUsers);
 
-    User linkRandomFriendsForRequestedUser(Long userId);
 }

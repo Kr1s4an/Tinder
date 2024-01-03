@@ -1,47 +1,43 @@
 package com.volasoftware.tinder.service;
 
+import com.volasoftware.tinder.exception.UserDoesNotExistException;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
-import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.utility.BotGenerator;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class FriendServiceImpl implements FriendService {
 
     private final UserService userService;
-    private final UserRepository userRepository;
 
-    public FriendServiceImpl(UserService userService, UserRepository userRepository) {
+    public FriendServiceImpl(UserService userService) {
         this.userService = userService;
-        this.userRepository = userRepository;
     }
 
     public void seedFriend(@RequestParam(required = false) Long userId) {
-        List<User> botUsers = userService.getUsersByUserType(UserType.BOT);
-        int numberOfBots = 20;
-
-        List<User> allUsers = new ArrayList<>();
-
-        if (botUsers.isEmpty()) {
-            Set<User> generatedBots = BotGenerator.generate(numberOfBots);
-            userRepository.saveAll(generatedBots);
+        List<User> users = new ArrayList<>();
+        if (userId != null) {
+            users.add(userService.getById(userId).orElseThrow(() -> new UserDoesNotExistException("User with this id does not exist")));
+        } else {
+            users.addAll(userService.getUsersByUserType(UserType.REAL));
         }
 
-        if (userId == null) {
-            List<User> nonBotUsers = userService.linkRandomFriendsForNonBotUsers();
-            allUsers.addAll(nonBotUsers);
-        } else {
-            User requestedUser = userService.linkRandomFriendsForRequestedUser(userId);
-            if (requestedUser != null) {
-                allUsers.add(requestedUser);
+        if (!CollectionUtils.isEmpty(users)) {
+            List<User> botUsers = userService.getUsersByUserType(UserType.BOT);
+            int numberOfBots = 20;
+
+            if (botUsers.isEmpty()) {
+                botUsers = BotGenerator.generate(numberOfBots);
+                userService.saveAll(botUsers);
             }
-            userRepository.saveAll(allUsers);
+
+            userService.linkRandomFriendsForNonBotUsers(users, botUsers);
         }
     }
 }

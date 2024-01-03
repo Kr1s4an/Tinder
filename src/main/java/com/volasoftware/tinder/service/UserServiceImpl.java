@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,6 +66,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> saveAll(Collection<User> users) {
+        return userRepository.saveAll(users);
     }
 
     @Override
@@ -195,25 +201,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByType(userType);
     }
 
-    public List<User> linkRandomFriendsForNonBotUsers() {
-        List<User> nonBotUsers = userRepository.findByType(UserType.REAL);
-        List<User> botUsers = userRepository.findByType(UserType.BOT);
-
+    public void linkRandomFriendsForNonBotUsers(List<User> nonBotUsers, List<User> botUsers) {
         FriendLinker.linkRandomFriendsForNonBotUsers(nonBotUsers, botUsers);
 
-        return nonBotUsers;
-    }
-
-    public User linkRandomFriendsForRequestedUser(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        User requestedUser = optionalUser.orElseThrow(() ->
-                new UserDoesNotExistException("User with this id does not exist"));
-
-        if (requestedUser != null) {
-            List<User> botUsers = userRepository.findByType(UserType.BOT);
-            FriendLinker.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
-        }
-
-        return requestedUser;
+        userRepository.saveAll(nonBotUsers);
     }
 }

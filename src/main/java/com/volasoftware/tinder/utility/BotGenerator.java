@@ -5,14 +5,14 @@ import com.volasoftware.tinder.model.Role;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BotGenerator {
-    public static Set<User> generate(int numberOfBots) {
-        Set<User> botUsers = new HashSet<>();
+    public static List<User> generate(int numberOfBots) {
+        List<User> botUsers = new ArrayList<>();
 
-        for (int i = 0; i <= numberOfBots; i++) {
+        for (int i = 0; i < numberOfBots; i++) {
             User botUser = createBot();
             botUsers.add(botUser);
         }
