@@ -206,7 +206,7 @@ public class UserServiceImpl implements UserService {
 
     public User linkRandomFriendsForRequestedUser(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
-        User requestedUser = optionalUser.orElse(null);
+        User requestedUser = optionalUser.orElseThrow(() -> new UserDoesNotExistException("User with this id does not exist"));
 
         if (requestedUser != null) {
             List<User> botUsers = userRepository.findByType(UserType.BOT);
