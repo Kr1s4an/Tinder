@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-public class LinkFriends {
+public class FriendLinker {
 
     public static void linkRandomFriendsForNonBotUsers(List<User> nonBotUsers, List<User> botUsers) {
         Random random = new Random();

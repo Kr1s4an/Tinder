@@ -20,17 +20,17 @@ public class FriendServiceImpl implements FriendService {
         this.userRepository = userRepository;
     }
 
-    public void seedFriend(@RequestParam(required = false) Long user_id) {
+    public void seedFriend(@RequestParam(required = false) Long userId) {
         List<User> botUsers = userService.getUsersByUserType(UserType.BOT);
 
         if (botUsers.isEmpty()) {
-            BotGenerator.generateBotUsers(20, userRepository);
+            BotGenerator.generate(20, userRepository);
         }
 
-        if (user_id == null) {
+        if (userId == null) {
             userService.linkRandomFriendsForNonBotUsers();
         } else {
-            userService.linkRandomFriendsForRequestedUser(user_id);
+            userService.linkRandomFriendsForRequestedUser(userId);
         }
     }
 }

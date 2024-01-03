@@ -16,8 +16,8 @@ public class FriendSeederController {
     }
 
     @PostMapping("/api/v1/seed-friends/{id}")
-    public ResponseEntity<String> seedFriends(@RequestParam(required = false) Long user_id) {
-        friendService.seedFriend(user_id);
+    public ResponseEntity<String> seedFriends(@RequestParam(required = false) Long userId) {
+        friendService.seedFriend(userId);
 
         return ResponseEntity.ok("Friend seeding completed successfully.");
     }

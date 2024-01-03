@@ -10,17 +10,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BotGenerator {
-    public static void generateBotUsers(int numberOfBots, UserRepository userRepository) {
+    public static void generate(int numberOfBots, UserRepository userRepository) {
         Set<User> botUsers = new HashSet<>();
 
         for (int i = 0; i <= numberOfBots; i++) {
-            User botUser = createBotUser();
+            User botUser = createBot();
             botUsers.add(botUser);
         }
         userRepository.saveAll(botUsers);
     }
 
-    private static User createBotUser() {
+    private static User createBot() {
         User botUser = new User();
         botUser.setFirstName("BotFirstName");
         botUser.setLastName("BotLastName");

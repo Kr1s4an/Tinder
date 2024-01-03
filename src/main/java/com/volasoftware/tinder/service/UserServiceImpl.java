@@ -11,7 +11,7 @@ import com.volasoftware.tinder.model.UserType;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
-import com.volasoftware.tinder.utility.LinkFriends;
+import com.volasoftware.tinder.utility.FriendLinker;
 import com.volasoftware.tinder.utility.PasswordEncoder;
 import com.volasoftware.tinder.utility.PasswordGenerator;
 import jakarta.mail.MessagingException;
@@ -199,7 +199,7 @@ public class UserServiceImpl implements UserService {
         List<User> nonBotUsers = userRepository.findByType(UserType.REAL);
         List<User> botUsers = userRepository.findByType(UserType.BOT);
 
-        LinkFriends.linkRandomFriendsForNonBotUsers(nonBotUsers, botUsers);
+        FriendLinker.linkRandomFriendsForNonBotUsers(nonBotUsers, botUsers);
 
         for (User user : nonBotUsers) {
             userRepository.save(user);
@@ -212,7 +212,7 @@ public class UserServiceImpl implements UserService {
 
         List<User> botUsers = userRepository.findByType(UserType.BOT);
 
-        LinkFriends.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
+        FriendLinker.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
 
         if (requestedUser != null) {
             userRepository.save(requestedUser);
