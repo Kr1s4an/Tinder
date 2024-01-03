@@ -14,13 +14,13 @@ public class BotGenerator {
         Set<User> botUsers = new HashSet<>();
 
         for (int i = 0; i <= numberOfBots; i++) {
-            User botUser = createBot();
+            User botUser = createBotUser();
             botUsers.add(botUser);
         }
         userRepository.saveAll(botUsers);
     }
 
-    private static User createBot() {
+    private static User createBotUser() {
         User botUser = new User();
         botUser.setFirstName("BotFirstName");
         botUser.setLastName("BotLastName");
