@@ -7,9 +7,11 @@ import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.exception.*;
 import com.volasoftware.tinder.model.Role;
 import com.volasoftware.tinder.model.User;
+import com.volasoftware.tinder.model.UserType;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
+import com.volasoftware.tinder.utility.FriendLinker;
 import com.volasoftware.tinder.utility.PasswordEncoder;
 import com.volasoftware.tinder.utility.PasswordGenerator;
 import jakarta.mail.MessagingException;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,6 +66,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> saveAll(Collection<User> users) {
+        return userRepository.saveAll(users);
     }
 
     @Override
@@ -187,5 +195,15 @@ public class UserServiceImpl implements UserService {
         User friend = userRepository.findById(friendId).orElseThrow(() -> new ResourceNotFoundException("User does not exist with the ID: " + friendId));
         user.getFriends().remove(friend);
         userRepository.save(user);
+    }
+
+    public List<User> getUsersByUserType(UserType userType) {
+        return userRepository.findByType(userType);
+    }
+
+    public void linkRandomFriendsForNonBotUsers(List<User> nonBotUsers, List<User> botUsers) {
+        FriendLinker.linkRandomFriendsForNonBotUsers(nonBotUsers, botUsers);
+
+        userRepository.saveAll(nonBotUsers);
     }
 }

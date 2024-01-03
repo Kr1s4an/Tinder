@@ -5,15 +5,19 @@ import com.volasoftware.tinder.dto.LoginUserDto;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.model.User;
+import com.volasoftware.tinder.model.UserType;
 import jakarta.mail.MessagingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
     List<User> getAll();
+
+    List<User> saveAll(Collection<User> users);
 
     void registerUser(UserDto userDto) throws IOException, MessagingException;
 
@@ -36,4 +40,9 @@ public interface UserService {
     void addFriend(Long friendId);
 
     void removeFriend(Long friendId);
+
+    List<User> getUsersByUserType(UserType userType);
+
+    void linkRandomFriendsForNonBotUsers(List<User> nonBotUsers, List<User> botUsers);
+
 }
