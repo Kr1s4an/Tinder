@@ -195,27 +195,24 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByType(userType);
     }
 
-    public void linkRandomFriendsForNonBotUsers() {
+    public List<User> linkRandomFriendsForNonBotUsers() {
         List<User> nonBotUsers = userRepository.findByType(UserType.REAL);
         List<User> botUsers = userRepository.findByType(UserType.BOT);
 
         FriendLinker.linkRandomFriendsForNonBotUsers(nonBotUsers, botUsers);
 
-        for (User user : nonBotUsers) {
-            userRepository.save(user);
-        }
+        return nonBotUsers;
     }
 
-    public void linkRandomFriendsForRequestedUser(Long userId) {
+    public User linkRandomFriendsForRequestedUser(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         User requestedUser = optionalUser.orElse(null);
 
-        List<User> botUsers = userRepository.findByType(UserType.BOT);
-
-        FriendLinker.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
-
         if (requestedUser != null) {
-            userRepository.save(requestedUser);
+            List<User> botUsers = userRepository.findByType(UserType.BOT);
+            FriendLinker.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
         }
+
+        return requestedUser;
     }
 }

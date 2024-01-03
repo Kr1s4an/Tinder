@@ -4,20 +4,20 @@ import com.volasoftware.tinder.model.Gender;
 import com.volasoftware.tinder.model.Role;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
-import com.volasoftware.tinder.repository.UserRepository;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class BotGenerator {
-    public static void generate(int numberOfBots, UserRepository userRepository) {
+    public static Set<User> generate(int numberOfBots) {
         Set<User> botUsers = new HashSet<>();
 
         for (int i = 0; i <= numberOfBots; i++) {
             User botUser = createBot();
             botUsers.add(botUser);
         }
-        userRepository.saveAll(botUsers);
+
+        return botUsers;
     }
 
     private static User createBot() {

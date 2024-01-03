@@ -40,7 +40,7 @@ public interface UserService {
 
     List<User> getUsersByUserType(UserType userType);
 
-    void linkRandomFriendsForNonBotUsers();
+    List<User> linkRandomFriendsForNonBotUsers();
 
-    void linkRandomFriendsForRequestedUser(Long userId);
+    User linkRandomFriendsForRequestedUser(Long userId);
 }

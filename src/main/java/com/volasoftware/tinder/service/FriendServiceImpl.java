@@ -7,7 +7,9 @@ import com.volasoftware.tinder.utility.BotGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class FriendServiceImpl implements FriendService {
@@ -22,15 +24,24 @@ public class FriendServiceImpl implements FriendService {
 
     public void seedFriend(@RequestParam(required = false) Long userId) {
         List<User> botUsers = userService.getUsersByUserType(UserType.BOT);
+        int numberOfBots = 20;
+
+        List<User> allUsers = new ArrayList<>();
 
         if (botUsers.isEmpty()) {
-            BotGenerator.generate(20, userRepository);
+            Set<User> generatedBots = BotGenerator.generate(numberOfBots);
+            userRepository.saveAll(generatedBots);
         }
 
         if (userId == null) {
-            userService.linkRandomFriendsForNonBotUsers();
+            List<User> nonBotUsers = userService.linkRandomFriendsForNonBotUsers();
+            allUsers.addAll(nonBotUsers);
         } else {
-            userService.linkRandomFriendsForRequestedUser(userId);
+            User requestedUser = userService.linkRandomFriendsForRequestedUser(userId);
+            if (requestedUser != null) {
+                allUsers.add(requestedUser);
+            }
+            userRepository.saveAll(allUsers);
         }
     }
 }
