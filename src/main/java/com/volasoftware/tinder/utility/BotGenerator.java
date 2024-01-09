@@ -1,12 +1,10 @@
 package com.volasoftware.tinder.utility;
 
-import com.volasoftware.tinder.model.Gender;
-import com.volasoftware.tinder.model.Role;
-import com.volasoftware.tinder.model.User;
-import com.volasoftware.tinder.model.UserType;
+import com.volasoftware.tinder.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class BotGenerator {
     public static List<User> generate(int numberOfBots) {
@@ -14,6 +12,7 @@ public class BotGenerator {
 
         for (int i = 0; i < numberOfBots; i++) {
             User botUser = createBot();
+            botUser.setLocation(createLocationForUser(botUser));
             botUsers.add(botUser);
         }
 
@@ -33,5 +32,16 @@ public class BotGenerator {
         botUser.setType(UserType.BOT);
 
         return botUser;
+    }
+
+    private static Location createLocationForUser(User user){
+        Random random = new Random();
+        Location location = new Location();
+
+        location.setUser(user);
+        location.setLatitude(random.nextDouble());
+        location.setLongitude(random.nextDouble());
+
+        return location;
     }
 }
