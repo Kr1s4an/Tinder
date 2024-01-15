@@ -34,7 +34,7 @@ public class BotGenerator {
         return botUser;
     }
 
-    private static Location createLocationForUser(User user){
+    private static Location createLocationForUser(User user) {
         Random random = new Random();
         Location location = new Location();
 
