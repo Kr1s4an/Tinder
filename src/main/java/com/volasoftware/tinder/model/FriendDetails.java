@@ -7,5 +7,5 @@ public interface FriendDetails {
 
     String getAge();
 
-    String getDistanceInKm();
+    Double getDistanceInKm();
 }

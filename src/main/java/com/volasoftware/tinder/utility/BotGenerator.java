@@ -4,9 +4,13 @@ import com.volasoftware.tinder.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class BotGenerator {
+    private static final double MIN_LATITUDE = -90.0;
+    private static final double MAX_LATITUDE = 90.0;
+    private static final double MIN_LONGITUDE = -180.0;
+    private static final double MAX_LONGITUDE = 180.0;
+
     public static List<User> generate(int numberOfBots) {
         List<User> botUsers = new ArrayList<>();
 
@@ -35,12 +39,11 @@ public class BotGenerator {
     }
 
     private static Location createLocationForUser(User user) {
-        Random random = new Random();
         Location location = new Location();
 
         location.setUser(user);
-        location.setLatitude(random.nextDouble());
-        location.setLongitude(random.nextDouble());
+        location.setLatitude(RandomCoordinatesGenerator.generate(MIN_LATITUDE, MAX_LATITUDE));
+        location.setLongitude(RandomCoordinatesGenerator.generate(MIN_LONGITUDE, MAX_LONGITUDE));
 
         return location;
     }
