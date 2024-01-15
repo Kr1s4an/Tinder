@@ -1,6 +1,7 @@
 package com.volasoftware.tinder.controller;
 
 import com.volasoftware.tinder.dto.FriendSearchDto;
+import com.volasoftware.tinder.exception.NoFriendsFoundException;
 import com.volasoftware.tinder.model.FriendDetails;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.service.FriendService;
@@ -38,6 +39,10 @@ public class FriendController {
         User user = userService.getLoggedUser();
 
         List<FriendDetails> sortedFriends = userService.getUserFriendsSortedByLocation(user.getId(), friendSearchDto);
+        if (sortedFriends.isEmpty()) {
+            throw new NoFriendsFoundException("No friends found for this user.");
+        }
+
         return ResponseEntity.ok(sortedFriends);
     }
 }

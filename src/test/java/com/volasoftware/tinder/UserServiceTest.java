@@ -256,4 +256,36 @@ public class UserServiceTest {
 
         assertEquals(1, result.size());
     }
+
+    @Test
+    public void testGetUserFriendsSortedByLocationWithNoFriends() {
+        Long userId = 1L;
+        FriendSearchDto friendSearchDto = new FriendSearchDto();
+
+        when(userRepository.findUserFriendsSortedByLocation(eq(userId), eq(null), eq(null)))
+                .thenReturn(Collections.emptyList());
+
+        List<FriendDetails> result = userServiceImpl.getUserFriendsSortedByLocation(userId, friendSearchDto);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetUserFriendsSortedByLocationWithMultipleFriends() {
+        Long userId = 1L;
+        FriendSearchDto friendSearchDto = new FriendSearchDto();
+
+        List<FriendDetails> mockFriends = Arrays.asList(
+                new FriendDetailsImpl("John", "Doe", 25, 10.5),
+                new FriendDetailsImpl("Dominic", "Torreto", 32, 5.0),
+                new FriendDetailsImpl("Todor", "Jivkov", 17, 23.4)
+        );
+        when(userRepository.findUserFriendsSortedByLocation(eq(userId), eq(null), eq(null)))
+                .thenReturn(mockFriends);
+
+        List<FriendDetails> result = userServiceImpl.getUserFriendsSortedByLocation(userId, friendSearchDto);
+
+        // Assert the result
+        assertEquals(3, result.size());
+    }
 }

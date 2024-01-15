@@ -68,6 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<FriendDetails> getUserFriendsSortedByLocation(Long userId, FriendSearchDto friendSearchDto) {
+
         return userRepository.findUserFriendsSortedByLocation(userId, friendSearchDto.getCurrentLatitude(), friendSearchDto.getCurrentLongitude());
     }
 
