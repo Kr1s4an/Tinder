@@ -5,7 +5,7 @@ public interface FriendDetails {
 
     String getLastName();
 
-    String getAge();
+    Integer getAge();
 
     Double getDistanceInKm();
 }
