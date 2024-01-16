@@ -75,14 +75,8 @@ public class UserServiceImpl implements UserService {
             friendSearchDto.setCurrentLongitude(user.getLocation().getLongitude());
         }
 
-        List<FriendDetails> sortedFriends = userRepository.findUserFriendsSortedByLocation(user.getId(),
+        return userRepository.findUserFriendsSortedByLocation(user.getId(),
                 friendSearchDto.getCurrentLatitude(), friendSearchDto.getCurrentLongitude());
-
-        if (sortedFriends.isEmpty()) {
-            throw new NoFriendsFoundException("No friends found for this user.");
-        }
-
-        return sortedFriends;
     }
 
     @Override
