@@ -1,9 +1,7 @@
 package com.volasoftware.tinder.service;
 
-import com.volasoftware.tinder.dto.ChangePasswordDto;
-import com.volasoftware.tinder.dto.LoginUserDto;
-import com.volasoftware.tinder.dto.UserDto;
-import com.volasoftware.tinder.dto.UserProfileDto;
+import com.volasoftware.tinder.dto.*;
+import com.volasoftware.tinder.model.FriendDetails;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
 import jakarta.mail.MessagingException;
@@ -15,9 +13,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
+    User getLoggedUser();
+
     List<User> getAll();
 
-    List<User> saveAll(Collection<User> users);
+    void saveAll(Collection<User> users);
+
+    List<FriendDetails> getUserFriendsSortedByLocation(FriendSearchDto friendSearchDto);
 
     void registerUser(UserDto userDto) throws IOException, MessagingException;
 

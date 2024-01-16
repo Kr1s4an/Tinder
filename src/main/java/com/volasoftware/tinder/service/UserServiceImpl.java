@@ -1,14 +1,8 @@
 package com.volasoftware.tinder.service;
 
-import com.volasoftware.tinder.dto.ChangePasswordDto;
-import com.volasoftware.tinder.dto.LoginUserDto;
-import com.volasoftware.tinder.dto.UserDto;
-import com.volasoftware.tinder.dto.UserProfileDto;
+import com.volasoftware.tinder.dto.*;
 import com.volasoftware.tinder.exception.*;
-import com.volasoftware.tinder.model.Role;
-import com.volasoftware.tinder.model.User;
-import com.volasoftware.tinder.model.UserType;
-import com.volasoftware.tinder.model.Verification;
+import com.volasoftware.tinder.model.*;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
 import com.volasoftware.tinder.utility.FriendLinker;
@@ -44,14 +38,6 @@ public class UserServiceImpl implements UserService {
     @Value("${localhost_verify}")
     private String localHostVerify;
 
-    private User getLoggedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUser = authentication.getName();
-
-        return userRepository.findOneByEmail(currentUser).orElseThrow(() ->
-                new NotLoggedInException("You are not logged in!"));
-    }
-
     public UserServiceImpl(
             UserRepository userRepository,
             VerificationRepository verificationRepository,
@@ -63,14 +49,34 @@ public class UserServiceImpl implements UserService {
         this.emailContent = emailContent;
     }
 
+    public User getLoggedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = authentication.getName();
+
+        return userRepository.findOneByEmail(currentUser).orElseThrow(() ->
+                new NotLoggedInException("You are not logged in!"));
+    }
+
     @Override
     public List<User> getAll() {
         return userRepository.findAll();
     }
 
     @Override
-    public List<User> saveAll(Collection<User> users) {
-        return userRepository.saveAll(users);
+    public void saveAll(Collection<User> users) {
+        userRepository.saveAll(users);
+    }
+
+    public List<FriendDetails> getUserFriendsSortedByLocation(FriendSearchDto friendSearchDto) {
+        User user = getLoggedUser();
+
+        if (friendSearchDto.getCurrentLongitude() == null || friendSearchDto.getCurrentLatitude() == null) {
+            friendSearchDto.setCurrentLatitude(user.getLocation().getLatitude());
+            friendSearchDto.setCurrentLongitude(user.getLocation().getLongitude());
+        }
+
+        return userRepository.findUserFriendsSortedByLocation(user.getId(),
+                friendSearchDto.getCurrentLatitude(), friendSearchDto.getCurrentLongitude());
     }
 
     @Override

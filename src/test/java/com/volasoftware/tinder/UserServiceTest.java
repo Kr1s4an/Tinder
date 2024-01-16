@@ -1,12 +1,10 @@
 package com.volasoftware.tinder;
 
+import com.volasoftware.tinder.dto.FriendSearchDto;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.exception.EmailAlreadyRegisteredException;
 import com.volasoftware.tinder.exception.UserDoesNotExistException;
-import com.volasoftware.tinder.model.Gender;
-import com.volasoftware.tinder.model.Role;
-import com.volasoftware.tinder.model.User;
-import com.volasoftware.tinder.model.Verification;
+import com.volasoftware.tinder.model.*;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
 import com.volasoftware.tinder.service.EmailContentService;
@@ -14,24 +12,19 @@ import com.volasoftware.tinder.service.EmailSenderService;
 import com.volasoftware.tinder.service.UserServiceImpl;
 import com.volasoftware.tinder.utility.PasswordGenerator;
 import jakarta.mail.MessagingException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -215,5 +208,111 @@ public class UserServiceTest {
         //Assert
         verify(userRepository, times(1)).save(loggedUser);
         assertFalse(loggedUser.getFriends().contains(friendToRemove));
+    }
+
+    @Test
+    public void testGetUserFriendsSortedByLocation() {
+        User loggedUser = new User();
+        loggedUser.setId(1L);
+
+        FriendSearchDto friendSearchDto = new FriendSearchDto();
+        friendSearchDto.setCurrentLatitude(20.0);
+        friendSearchDto.setCurrentLongitude(15.0);
+
+        FriendDetailsImpl mockFriend = new FriendDetailsImpl("John", "Doe", 25, 10.5);
+
+
+        List<FriendDetails> mockFriends = List.of(mockFriend);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findUserFriendsSortedByLocation(
+                eq(loggedUser.getId()), eq(friendSearchDto.getCurrentLatitude()), eq(friendSearchDto.getCurrentLongitude())))
+                .thenReturn(mockFriends);
+
+        List<FriendDetails> result = userServiceImpl.getUserFriendsSortedByLocation(friendSearchDto);
+
+        assertEquals(1, result.size());
+        assertEquals(mockFriend.getFirstName(), result.get(0).getFirstName());
+        assertEquals(mockFriend.getLastName(), result.get(0).getLastName());
+        verify(userRepository, times(1)).findUserFriendsSortedByLocation(
+                eq(loggedUser.getId()), eq(friendSearchDto.getCurrentLatitude()), eq(friendSearchDto.getCurrentLongitude()));
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    public void testGetUserFriendsSortedByLocationWithNoFriends() {
+        User loggedUser = new User();
+        loggedUser.setId(1L);
+
+        FriendSearchDto friendSearchDto = new FriendSearchDto();
+        friendSearchDto.setCurrentLatitude(20.0);
+        friendSearchDto.setCurrentLongitude(15.0);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findUserFriendsSortedByLocation(
+                loggedUser.getId(), friendSearchDto.getCurrentLatitude(), friendSearchDto.getCurrentLongitude()))
+                .thenReturn(Collections.emptyList());
+
+        List<FriendDetails> result = userServiceImpl.getUserFriendsSortedByLocation(friendSearchDto);
+
+        assertEquals(0, result.size());
+        verify(userRepository, times(1)).findUserFriendsSortedByLocation(
+                eq(loggedUser.getId()), eq(friendSearchDto.getCurrentLatitude()), eq(friendSearchDto.getCurrentLongitude()));
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    public void testGetUserFriendsSortedByLocationWithMultipleFriends() {
+        User loggedUser = new User();
+        loggedUser.setId(1L);
+
+        FriendSearchDto friendSearchDto = new FriendSearchDto();
+        friendSearchDto.setCurrentLatitude(20.0);
+        friendSearchDto.setCurrentLongitude(15.0);
+
+        FriendDetailsImpl mockFriend1 = new FriendDetailsImpl("John", "Doe", 25, 10.5);
+        FriendDetailsImpl mockFriend2 = new FriendDetailsImpl("Mikael", "Jackson", 13, 13.5);
+        FriendDetailsImpl mockFriend3 = new FriendDetailsImpl("Pesho", "Ivanov", 56, 16.8);
+
+        List<FriendDetails> mockFriends = Arrays.asList(mockFriend1, mockFriend2, mockFriend3);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findUserFriendsSortedByLocation(
+                eq(loggedUser.getId()), eq(friendSearchDto.getCurrentLatitude()), eq(friendSearchDto.getCurrentLongitude())))
+                .thenReturn(mockFriends);
+
+        List<FriendDetails> result = userServiceImpl.getUserFriendsSortedByLocation(friendSearchDto);
+
+        assertEquals(3, result.size());
+        assertEquals(mockFriend1.getFirstName(), result.get(0).getFirstName());
+        assertEquals(mockFriend1.getLastName(), result.get(0).getLastName());
+        assertEquals(mockFriend2.getFirstName(), result.get(1).getFirstName());
+        assertEquals(mockFriend2.getLastName(), result.get(1).getLastName());
+        assertEquals(mockFriend3.getFirstName(), result.get(2).getFirstName());
+        assertEquals(mockFriend3.getLastName(), result.get(2).getLastName());
+        verify(userRepository, times(1)).findUserFriendsSortedByLocation(
+                eq(loggedUser.getId()), eq(friendSearchDto.getCurrentLatitude()), eq(friendSearchDto.getCurrentLongitude()));
+        verifyNoMoreInteractions(userRepository);
     }
 }
