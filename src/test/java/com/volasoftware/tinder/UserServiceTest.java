@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -52,40 +53,6 @@ public class UserServiceTest {
 
     @InjectMocks
     private UserServiceImpl userServiceImpl;
-
-    private static class FriendDetailsImpl implements FriendDetails {
-        private final String firstName;
-        private final String lastName;
-        private final Integer age;
-        private final Double distanceInKm;
-
-        public FriendDetailsImpl(String firstName, String lastName, Integer age, Double distanceInKm) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.age = age;
-            this.distanceInKm = distanceInKm;
-        }
-
-        @Override
-        public String getFirstName() {
-            return firstName;
-        }
-
-        @Override
-        public String getLastName() {
-            return lastName;
-        }
-
-        @Override
-        public Integer getAge() {
-            return age;
-        }
-
-        @Override
-        public Double getDistanceInKm() {
-            return distanceInKm;
-        }
-    }
 
     @Test
     public void testUserServiceRegisterNewUserAndReturnTheUser() throws MessagingException, IOException {
@@ -254,6 +221,15 @@ public class UserServiceTest {
         friendSearchDto.setCurrentLatitude(20.0);
         friendSearchDto.setCurrentLongitude(15.0);
 
+        FriendDetails mockFriend1 = Mockito.mock(FriendDetails.class);
+        lenient().when(mockFriend1.getFirstName()).thenReturn("John");
+        lenient().when(mockFriend1.getLastName()).thenReturn("Doe");
+        lenient().when(mockFriend1.getAge()).thenReturn(25);
+        lenient().when(mockFriend1.getDistanceInKm()).thenReturn(10.5);
+
+
+        List<FriendDetails> mockFriends = List.of(mockFriend1);
+
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("someUsername");
 
@@ -264,12 +240,14 @@ public class UserServiceTest {
         when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
         when(userRepository.findUserFriendsSortedByLocation(
                 eq(loggedUser.getId()), eq(friendSearchDto.getCurrentLatitude()), eq(friendSearchDto.getCurrentLongitude())))
-                .thenReturn(Collections.singletonList(
-                        new FriendDetailsImpl("John", "Doe", 25, 10.5)));
+                .thenReturn(mockFriends);
 
         List<FriendDetails> result = userServiceImpl.getUserFriendsSortedByLocation(friendSearchDto);
 
         assertEquals(1, result.size());
+        verify(userRepository, times(1)).findUserFriendsSortedByLocation(
+                eq(loggedUser.getId()), eq(friendSearchDto.getCurrentLatitude()), eq(friendSearchDto.getCurrentLongitude()));
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test
@@ -299,6 +277,9 @@ public class UserServiceTest {
         } catch (NoFriendsFoundException e) {
             assertEquals("No friends found for this user.", e.getMessage());
         }
+        verify(userRepository, times(1)).findUserFriendsSortedByLocation(
+                eq(loggedUser.getId()), eq(friendSearchDto.getCurrentLatitude()), eq(friendSearchDto.getCurrentLongitude()));
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test
@@ -310,11 +291,26 @@ public class UserServiceTest {
         friendSearchDto.setCurrentLatitude(20.0);
         friendSearchDto.setCurrentLongitude(15.0);
 
-        List<FriendDetails> mockFriends = Arrays.asList(
-                new FriendDetailsImpl("John", "Doe", 25, 10.5),
-                new FriendDetailsImpl("Dominic", "Torreto", 32, 5.0),
-                new FriendDetailsImpl("Todor", "Jivkov", 17, 23.4)
-        );
+        FriendDetails mockFriend1 = Mockito.mock(FriendDetails.class);
+        lenient().when(mockFriend1.getFirstName()).thenReturn("John");
+        lenient().when(mockFriend1.getLastName()).thenReturn("Doe");
+        lenient().when(mockFriend1.getAge()).thenReturn(25);
+        lenient().when(mockFriend1.getDistanceInKm()).thenReturn(10.5);
+
+        FriendDetails mockFriend2 = Mockito.mock(FriendDetails.class);
+        lenient().when(mockFriend2.getFirstName()).thenReturn("Dominic");
+        lenient().when(mockFriend2.getLastName()).thenReturn("Torreto");
+        lenient().when(mockFriend2.getAge()).thenReturn(32);
+        lenient().when(mockFriend2.getDistanceInKm()).thenReturn(5.0);
+
+        FriendDetails mockFriend3 = Mockito.mock(FriendDetails.class);
+        lenient().when(mockFriend3.getFirstName()).thenReturn("Todor");
+        lenient().when(mockFriend3.getLastName()).thenReturn("Jivkov");
+        lenient().when(mockFriend3.getAge()).thenReturn(17);
+        lenient().when(mockFriend3.getDistanceInKm()).thenReturn(23.4);
+
+
+        List<FriendDetails> mockFriends = Arrays.asList(mockFriend1, mockFriend2, mockFriend3);
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("someUsername");
@@ -331,5 +327,8 @@ public class UserServiceTest {
         List<FriendDetails> result = userServiceImpl.getUserFriendsSortedByLocation(friendSearchDto);
 
         assertEquals(3, result.size());
+        verify(userRepository, times(1)).findUserFriendsSortedByLocation(
+                eq(loggedUser.getId()), eq(friendSearchDto.getCurrentLatitude()), eq(friendSearchDto.getCurrentLongitude()));
+        verifyNoMoreInteractions(userRepository);
     }
 }
