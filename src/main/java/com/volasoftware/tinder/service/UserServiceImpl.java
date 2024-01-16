@@ -67,9 +67,22 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAll(users);
     }
 
-    public List<FriendDetails> getUserFriendsSortedByLocation(Long userId, FriendSearchDto friendSearchDto) {
+    public List<FriendDetails> getUserFriendsSortedByLocation(FriendSearchDto friendSearchDto) {
+        User user = getLoggedUser();
 
-        return userRepository.findUserFriendsSortedByLocation(userId, friendSearchDto.getCurrentLatitude(), friendSearchDto.getCurrentLongitude());
+        if (friendSearchDto.getCurrentLongitude() == null || friendSearchDto.getCurrentLatitude() == null) {
+            friendSearchDto.setCurrentLatitude(user.getLocation().getLatitude());
+            friendSearchDto.setCurrentLongitude(user.getLocation().getLongitude());
+        }
+
+        List<FriendDetails> sortedFriends = userRepository.findUserFriendsSortedByLocation(user.getId(),
+                friendSearchDto.getCurrentLatitude(), friendSearchDto.getCurrentLongitude());
+
+        if (sortedFriends.isEmpty()) {
+            throw new NoFriendsFoundException("No friends found for this user.");
+        }
+
+        return sortedFriends;
     }
 
     @Override

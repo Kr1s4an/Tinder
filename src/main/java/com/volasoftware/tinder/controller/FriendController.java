@@ -1,9 +1,7 @@
 package com.volasoftware.tinder.controller;
 
 import com.volasoftware.tinder.dto.FriendSearchDto;
-import com.volasoftware.tinder.exception.NoFriendsFoundException;
 import com.volasoftware.tinder.model.FriendDetails;
-import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.service.FriendService;
 import com.volasoftware.tinder.service.UserService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -36,12 +34,7 @@ public class FriendController {
     @GetMapping("/")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<List<FriendDetails>> getFriendsSortedByLocation(@RequestBody FriendSearchDto friendSearchDto) {
-        User user = userService.getLoggedUser();
-
-        List<FriendDetails> sortedFriends = userService.getUserFriendsSortedByLocation(user.getId(), friendSearchDto);
-        if (sortedFriends.isEmpty()) {
-            throw new NoFriendsFoundException("No friends found for this user.");
-        }
+        List<FriendDetails> sortedFriends = userService.getUserFriendsSortedByLocation(friendSearchDto);
 
         return ResponseEntity.ok(sortedFriends);
     }

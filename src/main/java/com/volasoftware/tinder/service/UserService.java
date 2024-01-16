@@ -19,7 +19,7 @@ public interface UserService {
 
     void saveAll(Collection<User> users);
 
-    List<FriendDetails> getUserFriendsSortedByLocation(Long userId, FriendSearchDto friendSearchDto);
+    List<FriendDetails> getUserFriendsSortedByLocation(FriendSearchDto friendSearchDto);
 
     void registerUser(UserDto userDto) throws IOException, MessagingException;
 
