@@ -212,4 +212,10 @@ public class UserServiceImpl implements UserService {
 
         userRepository.saveAll(nonBotUsers);
     }
+
+    public FriendProfileDto findFriendById(Long friendId) {
+
+        User friend = userRepository.findFriendById(friendId);
+        return new FriendProfileDto(friend.getFirstName(), friend.getFirstName(), friend.getAge(), friend.getGender());
+    }
 }

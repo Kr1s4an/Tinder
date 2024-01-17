@@ -47,4 +47,5 @@ public interface UserService {
 
     void linkRandomFriendsForNonBotUsers(List<User> nonBotUsers, List<User> botUsers);
 
+    FriendProfileDto findFriendById(Long friendId);
 }
