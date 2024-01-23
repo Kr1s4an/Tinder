@@ -41,6 +41,7 @@ public class FriendController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<FriendProfileDto> getFriendsProfile(Long friendId) {
         FriendProfileDto friend = userService.findFriendById(friendId);
         return ResponseEntity.ok(friend);

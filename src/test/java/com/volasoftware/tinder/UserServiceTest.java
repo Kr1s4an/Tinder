@@ -1,8 +1,10 @@
 package com.volasoftware.tinder;
 
+import com.volasoftware.tinder.dto.FriendProfileDto;
 import com.volasoftware.tinder.dto.FriendSearchDto;
 import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.exception.EmailAlreadyRegisteredException;
+import com.volasoftware.tinder.exception.NoSuchFriendForUserException;
 import com.volasoftware.tinder.exception.UserDoesNotExistException;
 import com.volasoftware.tinder.model.*;
 import com.volasoftware.tinder.repository.UserRepository;
@@ -314,5 +316,99 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findUserFriendsSortedByLocation(
                 eq(loggedUser.getId()), eq(friendSearchDto.getCurrentLatitude()), eq(friendSearchDto.getCurrentLongitude()));
         verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    public void testFindFriendById() {
+        Long friendId = 1L;
+        String friendFirstName = "John";
+        String friendLastName = "Doe";
+        int friendAge = 25;
+        Gender friendGender = Gender.MALE;
+
+        User loggedUser = new User();
+        loggedUser.setId(2L);
+
+        User friend = new User();
+        friend.setId(friendId);
+        friend.setFirstName(friendFirstName);
+        friend.setLastName(friendLastName);
+        friend.setAge(friendAge);
+        friend.setGender(friendGender);
+
+        Set<User> friendsOfLoggedUser = new HashSet<>();
+        Set<User> friendsOfFriend = new HashSet<>();
+
+        friendsOfLoggedUser.add(friend);
+        friendsOfFriend.add(loggedUser);
+
+        loggedUser.setFriends(friendsOfLoggedUser);
+        friend.setFriends(friendsOfFriend);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findFriendById(friendId)).thenReturn(friend);
+
+        FriendProfileDto result = userServiceImpl.findFriendById(friendId);
+
+        assertNotNull(result);
+        assertEquals(friendFirstName, result.getFirstName());
+        assertEquals(friendLastName, result.getLastName());
+        assertEquals(friendAge, result.getAge());
+        assertEquals(friendGender, result.getGender());
+    }
+
+    @Test
+    public void testFindFriendByIdWithNonExistingFriend() {
+        Long nonExistingFriendId = 999L;
+
+        User loggedUser = new User();
+        loggedUser.setId(2L);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findFriendById(nonExistingFriendId)).thenReturn(null);
+
+        assertThrows(UserDoesNotExistException.class, () -> userServiceImpl.findFriendById(nonExistingFriendId));
+    }
+
+    @Test
+    public void testFindFriendByIdWithNotFriends() {
+        Long friendId = 1L;
+
+        User loggedUser = new User();
+        loggedUser.setId(2L);
+
+        User friend = new User();
+        friend.setId(friendId);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findFriendById(friendId)).thenReturn(friend);
+        when(authentication.getName()).thenReturn("testUser");
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        NoSuchFriendForUserException exception = assertThrows(NoSuchFriendForUserException.class,
+                () -> userServiceImpl.findFriendById(friendId));
+
+        assertEquals("You are not friends with this user", exception.getMessage());
     }
 }

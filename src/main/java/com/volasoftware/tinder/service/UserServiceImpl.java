@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -214,8 +211,31 @@ public class UserServiceImpl implements UserService {
     }
 
     public FriendProfileDto findFriendById(Long friendId) {
+        User loggedUser = getLoggedUser();
 
         User friend = userRepository.findFriendById(friendId);
-        return new FriendProfileDto(friend.getFirstName(), friend.getFirstName(), friend.getAge(), friend.getGender());
+        if (friend == null) {
+            throw new UserDoesNotExistException("Friend does not exist");
+        }
+
+        if (!areFriends(loggedUser, friend)) {
+            throw new NoSuchFriendForUserException("You are not friends with this user");
+        }
+
+        return new FriendProfileDto(friend.getFirstName(), friend.getLastName(), friend.getAge(), friend.getGender());
+    }
+
+    public boolean areFriends(User user1, User user2) {
+        Set<User> friendsOfUser1 = user1.getFriends();
+        Set<User> friendsOfUser2 = user2.getFriends();
+
+        if (friendsOfUser1 == null) {
+            friendsOfUser1 = new HashSet<>();
+        }
+        if (friendsOfUser2 == null) {
+            friendsOfUser2 = new HashSet<>();
+        }
+
+        return friendsOfUser1.contains(user2) && friendsOfUser2.contains(user1);
     }
 }
