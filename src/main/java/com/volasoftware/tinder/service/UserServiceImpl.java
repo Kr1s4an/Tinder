@@ -189,15 +189,25 @@ public class UserServiceImpl implements UserService {
     public void addFriend(Long friendId) {
         User user = getLoggedUser();
         User friend = userRepository.findById(friendId).orElseThrow(() -> new ResourceNotFoundException("User does not exist with the ID: " + friendId));
-        user.getFriends().add(friend);
-        userRepository.save(user);
+
+        if (!areFriends(user, friend)) {
+            user.getFriends().add(friend);
+            friend.getFriends().add(user);
+            userRepository.save(user);
+            userRepository.save(friend);
+        }
     }
 
     public void removeFriend(Long friendId) {
         User user = getLoggedUser();
         User friend = userRepository.findById(friendId).orElseThrow(() -> new ResourceNotFoundException("User does not exist with the ID: " + friendId));
-        user.getFriends().remove(friend);
-        userRepository.save(user);
+
+        if (areFriends(user, friend)) {
+            user.getFriends().remove(friend);
+            friend.getFriends().remove(user);
+            userRepository.save(user);
+            userRepository.save(friend);
+        }
     }
 
     public List<User> getUsersByUserType(UserType userType) {

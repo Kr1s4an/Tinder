@@ -3,6 +3,7 @@ package com.volasoftware.tinder.utility;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -24,6 +25,13 @@ public class FriendLinker {
 
             Set<User> friendsToAdd = generateUniqueRandomFriends(requestedUser, botUsers, randomNumberOfFriends);
             requestedUser.getFriends().addAll(friendsToAdd);
+
+            for (User friendToAdd : friendsToAdd) {
+                if (friendToAdd.getFriends() == null) {
+                    friendToAdd.setFriends(new HashSet<>());
+                }
+                friendToAdd.getFriends().add(requestedUser);
+            }
         }
     }
 
