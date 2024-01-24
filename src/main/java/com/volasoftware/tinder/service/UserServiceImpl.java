@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -192,15 +189,25 @@ public class UserServiceImpl implements UserService {
     public void addFriend(Long friendId) {
         User user = getLoggedUser();
         User friend = userRepository.findById(friendId).orElseThrow(() -> new ResourceNotFoundException("User does not exist with the ID: " + friendId));
-        user.getFriends().add(friend);
-        userRepository.save(user);
+
+        if (!areFriends(user, friend)) {
+            user.getFriends().add(friend);
+            friend.getFriends().add(user);
+            userRepository.save(user);
+            userRepository.save(friend);
+        }
     }
 
     public void removeFriend(Long friendId) {
         User user = getLoggedUser();
         User friend = userRepository.findById(friendId).orElseThrow(() -> new ResourceNotFoundException("User does not exist with the ID: " + friendId));
-        user.getFriends().remove(friend);
-        userRepository.save(user);
+
+        if (areFriends(user, friend)) {
+            user.getFriends().remove(friend);
+            friend.getFriends().remove(user);
+            userRepository.save(user);
+            userRepository.save(friend);
+        }
     }
 
     public List<User> getUsersByUserType(UserType userType) {
@@ -211,5 +218,25 @@ public class UserServiceImpl implements UserService {
         FriendLinker.linkRandomFriendsForNonBotUsers(nonBotUsers, botUsers);
 
         userRepository.saveAll(nonBotUsers);
+    }
+
+    public FriendProfileDto findFriendById(Long friendId) {
+        User loggedUser = getLoggedUser();
+
+        User friend = userRepository.findById(friendId).orElseThrow(
+                () -> new UserDoesNotExistException("Friend does not exist"));
+
+        if (!areFriends(loggedUser, friend)) {
+            throw new NoSuchFriendForUserException("You are not friends with this user");
+        }
+
+        return new FriendProfileDto(friend.getFirstName(), friend.getLastName(), friend.getAge(), friend.getGender());
+    }
+
+    public boolean areFriends(User user1, User user2) {
+        Set<User> friendsOfUser1 = user1.getFriends();
+        Set<User> friendsOfUser2 = user2.getFriends();
+
+        return friendsOfUser1.contains(user2) && friendsOfUser2.contains(user1);
     }
 }

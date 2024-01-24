@@ -1,5 +1,6 @@
 package com.volasoftware.tinder.controller;
 
+import com.volasoftware.tinder.dto.FriendProfileDto;
 import com.volasoftware.tinder.dto.FriendSearchDto;
 import com.volasoftware.tinder.model.FriendDetails;
 import com.volasoftware.tinder.service.FriendService;
@@ -37,5 +38,12 @@ public class FriendController {
         List<FriendDetails> sortedFriends = userService.getUserFriendsSortedByLocation(friendSearchDto);
 
         return ResponseEntity.ok(sortedFriends);
+    }
+
+    @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<FriendProfileDto> getFriendsProfile(Long friendId) {
+        FriendProfileDto friend = userService.findFriendById(friendId);
+        return ResponseEntity.ok(friend);
     }
 }

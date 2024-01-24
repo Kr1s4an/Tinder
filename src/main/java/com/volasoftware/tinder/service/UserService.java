@@ -1,6 +1,7 @@
 package com.volasoftware.tinder.service;
 
 import com.volasoftware.tinder.dto.*;
+import com.volasoftware.tinder.exception.NoSuchFriendForUserException;
 import com.volasoftware.tinder.model.FriendDetails;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
@@ -47,4 +48,7 @@ public interface UserService {
 
     void linkRandomFriendsForNonBotUsers(List<User> nonBotUsers, List<User> botUsers);
 
+    FriendProfileDto findFriendById(Long friendId) throws NoSuchFriendForUserException;
+
+    boolean areFriends(User user1, User user2);
 }
