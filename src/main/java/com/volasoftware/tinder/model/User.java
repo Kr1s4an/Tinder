@@ -6,6 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,7 +37,7 @@ public class User extends Auditable<String> implements UserDetails {
             name = "friend",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "FRIEND_ID"))
-    private Set<User> friends;
+    private Set<User> friends = new HashSet<>();
     private Integer age;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Location location;

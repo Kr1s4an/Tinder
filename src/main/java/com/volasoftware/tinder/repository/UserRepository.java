@@ -43,7 +43,5 @@ public interface UserRepository extends JpaRepository<User, java.lang.Long> {
     List<FriendDetails> findUserFriendsSortedByLocation(@Param("id") Long id,
                                                         @Param("lat") Double lat,
                                                         @Param("lon") Double lon);
-
-    @Query("SELECT u FROM User u WHERE u.id = :friendId")
-    User findFriendById(@Param("friendId") Long friendId);
+    Optional<User> findFriendById(Long friendId);
 }

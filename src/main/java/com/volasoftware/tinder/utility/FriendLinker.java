@@ -27,9 +27,6 @@ public class FriendLinker {
             requestedUser.getFriends().addAll(friendsToAdd);
 
             for (User friendToAdd : friendsToAdd) {
-                if (friendToAdd.getFriends() == null) {
-                    friendToAdd.setFriends(new HashSet<>());
-                }
                 friendToAdd.getFriends().add(requestedUser);
             }
         }

@@ -223,10 +223,8 @@ public class UserServiceImpl implements UserService {
     public FriendProfileDto findFriendById(Long friendId) {
         User loggedUser = getLoggedUser();
 
-        User friend = userRepository.findFriendById(friendId);
-        if (friend == null) {
-            throw new UserDoesNotExistException("Friend does not exist");
-        }
+       User friend = userRepository.findFriendById(friendId).orElseThrow(
+               () -> new UserDoesNotExistException("Friend does not exist"));
 
         if (!areFriends(loggedUser, friend)) {
             throw new NoSuchFriendForUserException("You are not friends with this user");
@@ -238,13 +236,6 @@ public class UserServiceImpl implements UserService {
     public boolean areFriends(User user1, User user2) {
         Set<User> friendsOfUser1 = user1.getFriends();
         Set<User> friendsOfUser2 = user2.getFriends();
-
-        if (friendsOfUser1 == null) {
-            friendsOfUser1 = new HashSet<>();
-        }
-        if (friendsOfUser2 == null) {
-            friendsOfUser2 = new HashSet<>();
-        }
 
         return friendsOfUser1.contains(user2) && friendsOfUser2.contains(user1);
     }

@@ -192,24 +192,27 @@ public class UserServiceTest {
 
         User friendToRemove = new User();
         friendToRemove.setId(2L);
-        Set<User> friends = new HashSet<>();
-        friends.add(friendToRemove);
-        loggedUser.setFriends(friends);
+
+        loggedUser.getFriends().add(friendToRemove);
+
+        friendToRemove.getFriends().add(loggedUser);
 
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
-
-        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
-        when(userRepository.findById(friendToRemove.getId())).thenReturn(Optional.of(friendToRemove));
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getName()).thenReturn("testUser");
 
-        //Act
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findById(friendToRemove.getId())).thenReturn(Optional.of(friendToRemove));
+
+        // Act
         userServiceImpl.removeFriend(friendToRemove.getId());
 
-        //Assert
-        verify(userRepository, times(1)).save(loggedUser);
+        // Assert
+        verify(userRepository, times(1)).save(eq(loggedUser));
+        verify(userRepository, times(1)).save(eq(friendToRemove));
         assertFalse(loggedUser.getFriends().contains(friendToRemove));
+        assertFalse(friendToRemove.getFriends().contains(loggedUser));
     }
 
     @Test
@@ -353,7 +356,7 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
-        when(userRepository.findFriendById(friendId)).thenReturn(friend);
+        when(userRepository.findFriendById(friendId)).thenReturn(Optional.of(friend));
 
         FriendProfileDto result = userServiceImpl.findFriendById(friendId);
 
@@ -379,7 +382,7 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
-        when(userRepository.findFriendById(nonExistingFriendId)).thenReturn(null);
+        when(userRepository.findFriendById(nonExistingFriendId)).thenReturn(Optional.empty());
 
         assertThrows(UserDoesNotExistException.class, () -> userServiceImpl.findFriendById(nonExistingFriendId));
     }
@@ -402,7 +405,7 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
-        when(userRepository.findFriendById(friendId)).thenReturn(friend);
+        when(userRepository.findFriendById(friendId)).thenReturn(Optional.of(friend));
         when(authentication.getName()).thenReturn("testUser");
         when(securityContext.getAuthentication()).thenReturn(authentication);
 
