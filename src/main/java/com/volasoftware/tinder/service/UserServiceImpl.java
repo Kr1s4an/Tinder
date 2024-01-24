@@ -223,8 +223,8 @@ public class UserServiceImpl implements UserService {
     public FriendProfileDto findFriendById(Long friendId) {
         User loggedUser = getLoggedUser();
 
-       User friend = userRepository.findFriendById(friendId).orElseThrow(
-               () -> new UserDoesNotExistException("Friend does not exist"));
+        User friend = userRepository.findById(friendId).orElseThrow(
+                () -> new UserDoesNotExistException("Friend does not exist"));
 
         if (!areFriends(loggedUser, friend)) {
             throw new NoSuchFriendForUserException("You are not friends with this user");
