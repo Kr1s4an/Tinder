@@ -42,6 +42,8 @@ public class User extends Auditable<String> implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Location location;
     private UserType type;
+    @OneToMany(mappedBy = "user")
+    private Set<Rating> ratings = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -167,5 +169,13 @@ public class User extends Auditable<String> implements UserDetails {
 
     public void setType(UserType type) {
         this.type = type;
+    }
+
+    public Set<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Set<Rating> ratings) {
+        this.ratings = ratings;
     }
 }
