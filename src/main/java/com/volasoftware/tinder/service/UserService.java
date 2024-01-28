@@ -18,6 +18,8 @@ public interface UserService {
 
     List<User> getAll();
 
+    void save(User user);
+
     void saveAll(Collection<User> users);
 
     List<FriendDetails> getUserFriendsSortedByLocation(FriendSearchDto friendSearchDto);
