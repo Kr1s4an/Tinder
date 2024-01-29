@@ -2,11 +2,13 @@ package com.volasoftware.tinder.controller;
 
 import com.volasoftware.tinder.dto.FriendProfileDto;
 import com.volasoftware.tinder.dto.FriendSearchDto;
+import com.volasoftware.tinder.dto.RatingDto;
 import com.volasoftware.tinder.model.FriendDetails;
 import com.volasoftware.tinder.service.FriendService;
+import com.volasoftware.tinder.service.RatingService;
 import com.volasoftware.tinder.service.UserService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +20,14 @@ public class FriendController {
 
     private final FriendService friendService;
     private final UserService userService;
+    private final RatingService ratingService;
 
     public FriendController(FriendService friendService,
-                            UserService userService) {
+                            UserService userService,
+                            RatingService ratingService) {
         this.friendService = friendService;
         this.userService = userService;
+        this.ratingService = ratingService;
     }
 
     @PostMapping("/seed/{id}")
@@ -45,5 +50,13 @@ public class FriendController {
     public ResponseEntity<FriendProfileDto> getFriendsProfile(Long friendId) {
         FriendProfileDto friend = userService.findFriendById(friendId);
         return ResponseEntity.ok(friend);
+    }
+
+    @PostMapping("/rate")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity rateFriends(@RequestBody RatingDto ratingDto) {
+        ratingService.rateFriend(ratingDto);
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }

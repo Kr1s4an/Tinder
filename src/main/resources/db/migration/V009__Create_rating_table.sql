@@ -1,0 +1,8 @@
+create table rating(
+   ID INT PRIMARY KEY AUTO_INCREMENT,
+       USER_ID INT NOT NULL,
+       FRIEND_ID INT NOT NULL,
+       RATING INT NOT NULL CHECK (rating >= 1 AND rating <= 10),
+       FOREIGN KEY (USER_ID) REFERENCES user (ID),
+       FOREIGN KEY (FRIEND_ID) REFERENCES user (ID)
+);
