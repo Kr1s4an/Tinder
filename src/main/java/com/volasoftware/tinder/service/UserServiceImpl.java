@@ -247,7 +247,7 @@ public class UserServiceImpl implements UserService {
 
     public List<FriendRatingDetails> findFriendsSortedByRating() {
         User loggedUser = getLoggedUser();
-        List<FriendRatingDetails> friends = userRepository.findFriendsSortedByRating(loggedUser.getId());
-        return friends;
+
+        return userRepository.findFriendsSortedByRating(loggedUser.getId());
     }
 }
