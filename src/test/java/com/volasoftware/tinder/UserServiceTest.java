@@ -414,4 +414,62 @@ public class UserServiceTest {
 
         assertEquals("You are not friends with this user", exception.getMessage());
     }
+
+    @Test
+    public void testFindFriendsSortedByRatingWihNoFriends() {
+        User loggedUser = new User();
+        loggedUser.setId(1L);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findFriendsSortedByRating(loggedUser.getId()))
+                .thenReturn(Collections.emptyList());
+
+        List<FriendRatingDetails> result = userServiceImpl.findFriendsSortedByRating();
+
+        assertEquals(0, result.size());
+        verify(userRepository, times(1)).findFriendsSortedByRating(loggedUser.getId());
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    public void testFindFriendsSortedByRatingWithMultipleFriends() {
+        User loggedUser = new User();
+        loggedUser.setId(1L);
+
+        FriendRatingDetailsImpl mockFriend1 = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
+        FriendRatingDetailsImpl mockFriend2 = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
+        FriendRatingDetailsImpl mockFriend3 = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
+
+
+        List<FriendRatingDetails> mockFriends = Arrays.asList(mockFriend1, mockFriend2, mockFriend3);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userServiceImpl.findFriendsSortedByRating()).thenReturn(mockFriends);
+
+        List<FriendRatingDetails> result = userServiceImpl.findFriendsSortedByRating();
+
+        assertEquals(3, result.size());
+        assertEquals(mockFriend1.getFirstName(), result.get(0).getFirstName());
+        assertEquals(mockFriend1.getLastName(), result.get(0).getLastName());
+        assertEquals(mockFriend2.getFirstName(), result.get(1).getFirstName());
+        assertEquals(mockFriend2.getLastName(), result.get(1).getLastName());
+        assertEquals(mockFriend3.getFirstName(), result.get(2).getFirstName());
+        assertEquals(mockFriend3.getLastName(), result.get(2).getLastName());
+        verify(userRepository, times(1)).findFriendsSortedByRating(loggedUser.getId());
+        verifyNoMoreInteractions(userRepository);
+    }
 }
