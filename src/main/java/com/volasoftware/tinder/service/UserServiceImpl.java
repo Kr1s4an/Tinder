@@ -244,4 +244,10 @@ public class UserServiceImpl implements UserService {
 
         return friendsOfUser1.contains(user2) && friendsOfUser2.contains(user1);
     }
+
+    public List<FriendRatingDetails> findFriendsSortedByRating() {
+        User loggedUser = getLoggedUser();
+        List<FriendRatingDetails> friends = userRepository.findFriendsSortedByRating(loggedUser.getId());
+        return friends;
+    }
 }

@@ -1,6 +1,7 @@
 package com.volasoftware.tinder.repository;
 
 import com.volasoftware.tinder.model.FriendDetails;
+import com.volasoftware.tinder.model.FriendRatingDetails;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,4 +44,11 @@ public interface UserRepository extends JpaRepository<User, java.lang.Long> {
     List<FriendDetails> findUserFriendsSortedByLocation(@Param("id") Long id,
                                                         @Param("lat") Double lat,
                                                         @Param("lon") Double lon);
+
+    @Query(value = "SELECT u.first_name as firstName, u.last_name as lastName, u.age as age, r.rating as rating " +
+            " FROM user u " +
+            " LEFT JOIN rating r ON u.id = r.friend_id AND r.user_id = :id " +
+            " WHERE u.id IN (SELECT friend_id FROM friend WHERE user_id = :id) " +
+            " ORDER BY COALESCE(r.rating, 0) DESC", nativeQuery = true)
+    List<FriendRatingDetails> findFriendsSortedByRating(@Param("id") Long id);
 }

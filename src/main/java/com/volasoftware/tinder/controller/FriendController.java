@@ -4,6 +4,7 @@ import com.volasoftware.tinder.dto.FriendProfileDto;
 import com.volasoftware.tinder.dto.FriendSearchDto;
 import com.volasoftware.tinder.dto.RatingDto;
 import com.volasoftware.tinder.model.FriendDetails;
+import com.volasoftware.tinder.model.FriendRatingDetails;
 import com.volasoftware.tinder.service.FriendService;
 import com.volasoftware.tinder.service.RatingService;
 import com.volasoftware.tinder.service.UserService;
@@ -39,7 +40,7 @@ public class FriendController {
 
     @GetMapping("/")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<List<FriendDetails>> getFriendsSortedByLocation(@RequestBody FriendSearchDto friendSearchDto) {
+    public ResponseEntity<List<FriendDetails>> getFriendsSortedByLocation(FriendSearchDto friendSearchDto) {
         List<FriendDetails> sortedFriends = userService.getUserFriendsSortedByLocation(friendSearchDto);
 
         return ResponseEntity.ok(sortedFriends);
@@ -58,5 +59,13 @@ public class FriendController {
         ratingService.rateFriend(ratingDto);
 
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @GetMapping("/rating")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<List<FriendRatingDetails>> getFriendsSortedByRating() {
+        List<FriendRatingDetails> sortedFriends = userService.findFriendsSortedByRating();
+
+        return ResponseEntity.ok(sortedFriends);
     }
 }
