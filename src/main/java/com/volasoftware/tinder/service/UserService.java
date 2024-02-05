@@ -8,7 +8,6 @@ import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.IOException;
