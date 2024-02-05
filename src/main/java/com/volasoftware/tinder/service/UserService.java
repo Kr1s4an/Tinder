@@ -58,5 +58,4 @@ public interface UserService {
 
     Page<FriendRatingDetails> findFriendsSortedByRating(int pageNumber, int pageSize);
 
-
 }
