@@ -485,8 +485,8 @@ public class UserServiceTest {
         loggedUser.setId(1L);
 
         FriendRatingDetailsImpl mockFriend1 = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
-        FriendRatingDetailsImpl mockFriend2 = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
-        FriendRatingDetailsImpl mockFriend3 = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
+        FriendRatingDetailsImpl mockFriend2 = new FriendRatingDetailsImpl("Vin", "Diesel", 43, 8);
+        FriendRatingDetailsImpl mockFriend3 = new FriendRatingDetailsImpl("Paul", "Walker", 43, 7);
 
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("rating")));
 
