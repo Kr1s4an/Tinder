@@ -57,5 +57,4 @@ public interface UserService {
     boolean areFriends(User user1, User user2);
 
     Page<FriendRatingDetails> findFriendsSortedByRating(int pageNumber, int pageSize);
-
 }
