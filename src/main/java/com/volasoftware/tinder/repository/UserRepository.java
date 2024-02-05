@@ -4,6 +4,8 @@ import com.volasoftware.tinder.model.FriendDetails;
 import com.volasoftware.tinder.model.FriendRatingDetails;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,6 +51,9 @@ public interface UserRepository extends JpaRepository<User, java.lang.Long> {
             " FROM user u " +
             " LEFT JOIN rating r ON u.id = r.friend_id AND r.user_id = :id " +
             " WHERE u.id IN (SELECT friend_id FROM friend WHERE user_id = :id) " +
-            " ORDER BY COALESCE(r.rating, 0) DESC", nativeQuery = true)
-    List<FriendRatingDetails> findFriendsSortedByRating(@Param("id") Long id);
+            " ORDER BY rating DESC",
+            countQuery = "SELECT COUNT(u.id) FROM user u WHERE u.id IN " +
+                    "(SELECT friend_id FROM friend WHERE user_id = :id)",
+            nativeQuery = true)
+    Page<FriendRatingDetails> findFriendsSortedByRating(@Param("id") Long id, Pageable pageable);
 }

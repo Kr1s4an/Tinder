@@ -9,6 +9,8 @@ import com.volasoftware.tinder.service.FriendService;
 import com.volasoftware.tinder.service.RatingService;
 import com.volasoftware.tinder.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,8 +65,11 @@ public class FriendController {
 
     @GetMapping("/rating")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<List<FriendRatingDetails>> getFriendsSortedByRating() {
-        List<FriendRatingDetails> sortedFriends = userService.findFriendsSortedByRating();
+    public ResponseEntity<Page<FriendRatingDetails>> getFriendsSortedByRating(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Page<FriendRatingDetails> sortedFriends = userService.findFriendsSortedByRating(page, size);
 
         return ResponseEntity.ok(sortedFriends);
     }

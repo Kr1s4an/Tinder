@@ -7,6 +7,8 @@ import com.volasoftware.tinder.model.FriendRatingDetails;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
 import jakarta.mail.MessagingException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.IOException;
@@ -55,7 +57,7 @@ public interface UserService {
 
     boolean areFriends(User user1, User user2);
 
-    List<FriendRatingDetails> findFriendsSortedByRating();
+    Page<FriendRatingDetails> findFriendsSortedByRating(int pageNumber, int pageSize);
 
 
 }
