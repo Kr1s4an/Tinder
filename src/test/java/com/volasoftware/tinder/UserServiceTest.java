@@ -426,7 +426,7 @@ public class UserServiceTest {
 
         FriendRatingDetailsImpl mockFriend = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
 
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("rating")));  // Add sorting information
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("rating")));
 
         List<FriendRatingDetails> mockFriends = List.of(mockFriend);
 
@@ -456,7 +456,7 @@ public class UserServiceTest {
         User loggedUser = new User();
         loggedUser.setId(1L);
 
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("rating").descending()); // Set the same sort order
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("rating").descending());
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("someUsername");
@@ -488,7 +488,7 @@ public class UserServiceTest {
         FriendRatingDetailsImpl mockFriend2 = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
         FriendRatingDetailsImpl mockFriend3 = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
 
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("rating")));  // Add sorting information
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("rating")));
 
         List<FriendRatingDetails> mockFriends = Arrays.asList(mockFriend1, mockFriend2, mockFriend3);
 
