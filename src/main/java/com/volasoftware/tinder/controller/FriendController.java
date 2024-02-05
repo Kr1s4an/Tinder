@@ -65,8 +65,8 @@ public class FriendController {
     @GetMapping("/rating")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<FriendRatingDetails>> getFriendsSortedByRating(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "5", required = false) int size) {
 
         Page<FriendRatingDetails> sortedFriends = userService.findFriendsSortedByRating(page, size);
 

@@ -50,8 +50,7 @@ public interface UserRepository extends JpaRepository<User, java.lang.Long> {
     @Query(value = "SELECT u.first_name as firstName, u.last_name as lastName, u.age as age, r.rating as rating " +
             " FROM user u " +
             " LEFT JOIN rating r ON u.id = r.friend_id AND r.user_id = :id " +
-            " WHERE u.id IN (SELECT friend_id FROM friend WHERE user_id = :id) " +
-            " ORDER BY rating DESC",
+            " WHERE u.id IN (SELECT friend_id FROM friend WHERE user_id = :id) ",
             countQuery = "SELECT COUNT(u.id) FROM user u WHERE u.id IN " +
                     "(SELECT friend_id FROM friend WHERE user_id = :id)",
             nativeQuery = true)
