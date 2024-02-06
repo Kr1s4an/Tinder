@@ -3,7 +3,6 @@ package com.volasoftware.tinder.utility;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;

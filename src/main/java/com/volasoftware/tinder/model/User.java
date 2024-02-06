@@ -32,7 +32,7 @@ public class User extends Auditable<String> implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
     private Role role;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "friend",
             joinColumns = @JoinColumn(name = "USER_ID"),
