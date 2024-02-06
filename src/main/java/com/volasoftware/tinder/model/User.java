@@ -42,7 +42,7 @@ public class User extends Auditable<String> implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Location location;
     private UserType type;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Rating> ratings = new HashSet<>();
 
     @Override

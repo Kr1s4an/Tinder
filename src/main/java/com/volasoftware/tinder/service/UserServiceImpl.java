@@ -13,6 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -243,5 +247,12 @@ public class UserServiceImpl implements UserService {
         Set<User> friendsOfUser2 = user2.getFriends();
 
         return friendsOfUser1.contains(user2) && friendsOfUser2.contains(user1);
+    }
+
+    public Page<FriendRatingDetails> findFriendsSortedByRating(int pageNumber, int pageSize) {
+        User loggedUser = getLoggedUser();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("rating").descending());
+
+        return userRepository.findFriendsSortedByRating(loggedUser.getId(), pageable);
     }
 }

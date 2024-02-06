@@ -4,10 +4,12 @@ import com.volasoftware.tinder.dto.FriendProfileDto;
 import com.volasoftware.tinder.dto.FriendSearchDto;
 import com.volasoftware.tinder.dto.RatingDto;
 import com.volasoftware.tinder.model.FriendDetails;
+import com.volasoftware.tinder.model.FriendRatingDetails;
 import com.volasoftware.tinder.service.FriendService;
 import com.volasoftware.tinder.service.RatingService;
 import com.volasoftware.tinder.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +41,7 @@ public class FriendController {
 
     @GetMapping("/")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<List<FriendDetails>> getFriendsSortedByLocation(@RequestBody FriendSearchDto friendSearchDto) {
+    public ResponseEntity<List<FriendDetails>> getFriendsSortedByLocation(FriendSearchDto friendSearchDto) {
         List<FriendDetails> sortedFriends = userService.getUserFriendsSortedByLocation(friendSearchDto);
 
         return ResponseEntity.ok(sortedFriends);
@@ -58,5 +60,16 @@ public class FriendController {
         ratingService.rateFriend(ratingDto);
 
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @GetMapping("/rating")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Page<FriendRatingDetails>> getFriendsSortedByRating(
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "5", required = false) int size) {
+
+        Page<FriendRatingDetails> sortedFriends = userService.findFriendsSortedByRating(page, size);
+
+        return ResponseEntity.ok(sortedFriends);
     }
 }

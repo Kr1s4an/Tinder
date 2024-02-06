@@ -19,6 +19,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -413,5 +417,103 @@ public class UserServiceTest {
                 () -> userServiceImpl.findFriendById(friendId));
 
         assertEquals("You are not friends with this user", exception.getMessage());
+    }
+
+    @Test
+    public void testFindFriendsSortedByRating() {
+        User loggedUser = new User();
+        loggedUser.setId(1L);
+
+        FriendRatingDetailsImpl mockFriend = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
+
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("rating")));
+
+        List<FriendRatingDetails> mockFriends = List.of(mockFriend);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findFriendsSortedByRating(eq(loggedUser.getId()), eq(pageRequest)))
+                .thenReturn(new PageImpl<>(mockFriends, pageRequest, mockFriends.size()));
+
+        Page<FriendRatingDetails> result = userServiceImpl.findFriendsSortedByRating(
+                pageRequest.getPageNumber(), pageRequest.getPageSize());
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(mockFriend.getFirstName(), result.getContent().get(0).getFirstName());
+        assertEquals(mockFriend.getLastName(), result.getContent().get(0).getLastName());
+        verify(userRepository, times(1)).findFriendsSortedByRating(loggedUser.getId(), pageRequest);
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    public void testFindFriendsSortedByRatingWihNoFriends() {
+        User loggedUser = new User();
+        loggedUser.setId(1L);
+
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("rating").descending());
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+
+        when(userRepository.findFriendsSortedByRating(eq(loggedUser.getId()), eq(pageRequest)))
+                .thenReturn(new PageImpl<>(Collections.emptyList()));
+
+        Page<FriendRatingDetails> result = userServiceImpl.findFriendsSortedByRating(
+                pageRequest.getPageNumber(), pageRequest.getPageSize());
+
+        assertEquals(0, result.getTotalElements());
+        assertTrue(result.getContent().isEmpty());
+        verify(userRepository, times(1)).findFriendsSortedByRating(loggedUser.getId(), pageRequest);
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    public void testFindFriendsSortedByRatingWithMultipleFriends() {
+        User loggedUser = new User();
+        loggedUser.setId(1L);
+
+        FriendRatingDetailsImpl mockFriend1 = new FriendRatingDetailsImpl("John", "Doe", 25, 10);
+        FriendRatingDetailsImpl mockFriend2 = new FriendRatingDetailsImpl("Vin", "Diesel", 43, 8);
+        FriendRatingDetailsImpl mockFriend3 = new FriendRatingDetailsImpl("Paul", "Walker", 43, 7);
+
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("rating")));
+
+        List<FriendRatingDetails> mockFriends = Arrays.asList(mockFriend1, mockFriend2, mockFriend3);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("someUsername");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
+        when(userRepository.findFriendsSortedByRating(eq(loggedUser.getId()), eq(pageRequest)))
+                .thenReturn(new PageImpl<>(mockFriends, pageRequest, mockFriends.size()));
+
+        Page<FriendRatingDetails> result = userServiceImpl.findFriendsSortedByRating(
+                pageRequest.getPageNumber(), pageRequest.getPageSize());
+
+        assertEquals(3, result.getTotalElements());
+        assertEquals(mockFriend1.getFirstName(), result.getContent().get(0).getFirstName());
+        assertEquals(mockFriend1.getLastName(), result.getContent().get(0).getLastName());
+        assertEquals(mockFriend2.getFirstName(), result.getContent().get(1).getFirstName());
+        assertEquals(mockFriend2.getLastName(), result.getContent().get(1).getLastName());
+        assertEquals(mockFriend3.getFirstName(), result.getContent().get(2).getFirstName());
+        assertEquals(mockFriend3.getLastName(), result.getContent().get(2).getLastName());
+        verify(userRepository, times(1)).findFriendsSortedByRating(loggedUser.getId(), pageRequest);
+        verifyNoMoreInteractions(userRepository);
     }
 }
