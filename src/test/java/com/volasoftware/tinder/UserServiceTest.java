@@ -516,4 +516,30 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findFriendsSortedByRating(loggedUser.getId(), pageRequest);
         verifyNoMoreInteractions(userRepository);
     }
+
+    @Test
+    public void testLinkRandomFriendsAsync(){
+        User user = new User();
+        user.setId(1L);
+        user.setType(UserType.REAL);
+
+        User botUser1 = new User();
+        botUser1.setId(2L);
+        botUser1.setType(UserType.BOT);
+
+        User botUser2 = new User();
+        botUser2.setId(3L);
+        botUser2.setType(UserType.BOT);
+
+        List<User> botUsers = Arrays.asList(botUser1, botUser2);
+
+        when(userRepository.findByType(UserType.BOT)).thenReturn(botUsers);
+
+        userServiceImpl.linkRandomFriendsAsync(user);
+
+        assertEquals(2, botUsers.size());
+        verify(userRepository, times(1)).findByType(UserType.BOT);
+        verify(userRepository, times(1)).save(user);
+        verifyNoMoreInteractions(userRepository);
+    }
 }
