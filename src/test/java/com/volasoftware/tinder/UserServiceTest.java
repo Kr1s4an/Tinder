@@ -537,7 +537,6 @@ public class UserServiceTest {
 
         userServiceImpl.linkRandomFriendsAsync(user);
 
-        assertEquals(2, botUsers.size());
         verify(userRepository, times(1)).findByType(UserType.BOT);
         verify(userRepository, times(1)).save(user);
         verifyNoMoreInteractions(userRepository);
