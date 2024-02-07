@@ -518,7 +518,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testLinkRandomFriendsAsync(){
+    public void testLinkRandomFriendsAsync() {
         User user = new User();
         user.setId(1L);
         user.setType(UserType.REAL);
