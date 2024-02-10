@@ -5,7 +5,6 @@ import com.volasoftware.tinder.exception.UserAlreadyVerifiedException;
 import com.volasoftware.tinder.exception.UserDoesNotExistException;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.Verification;
-import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,7 @@ import java.util.UUID;
 @Service
 public class VerificationService {
     private final VerificationRepository verificationRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final EmailSenderService emailSender;
     private final EmailContentService emailContent;
 
@@ -27,11 +26,11 @@ public class VerificationService {
     private String localHostVerify;
 
     public VerificationService(VerificationRepository verificationRepository,
-                               UserRepository userRepository,
+                               UserService userService,
                                EmailSenderService emailSender,
                                EmailContentService emailContent) {
         this.verificationRepository = verificationRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.emailSender = emailSender;
         this.emailContent = emailContent;
     }
@@ -46,8 +45,9 @@ public class VerificationService {
         if (tokenEntity.getExpirationDate().isAfter(LocalDateTime.now())) {
             User userToVerify = tokenEntity.getUser();
             userToVerify.setVerified(true);
-            userRepository.save(userToVerify);
+            userService.save(userToVerify);
 
+            userService.linkRandomFriendsAsync(userToVerify);
             return true;
         }
 
@@ -55,7 +55,7 @@ public class VerificationService {
     }
 
     public void resendEmail(String email) throws MessagingException, IOException {
-        User user = userRepository.findOneByEmail(email).orElseThrow(
+        User user = userService.findOneByEmail(email).orElseThrow(
                 () -> new UserDoesNotExistException("User with this email does not exist")
         );
         if (user.isVerified()) {
@@ -71,7 +71,7 @@ public class VerificationService {
         newToken.setExpirationDate(LocalDateTime.now().plusDays(2));
         verificationRepository.saveAndFlush(newToken);
 
-        String content =  emailContent.createContent(localHostVerify + newToken.getToken(), "classpath:email/registrationEmail.html");
+        String content = emailContent.createContent(localHostVerify + newToken.getToken(), "classpath:email/registrationEmail.html");
 
         emailSender.sendEmail(user.getEmail(), "Verification", content);
     }

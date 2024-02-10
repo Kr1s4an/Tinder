@@ -5,6 +5,7 @@ import com.volasoftware.tinder.exception.*;
 import com.volasoftware.tinder.model.*;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
+import com.volasoftware.tinder.utility.BotGenerator;
 import com.volasoftware.tinder.utility.FriendLinker;
 import com.volasoftware.tinder.utility.PasswordEncoder;
 import com.volasoftware.tinder.utility.PasswordGenerator;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -130,6 +132,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> getById(long id) {
         return userRepository.findById(id);
+    }
+
+    @Override
+    public Optional<User> findOneByEmail(String email) {
+        return userRepository.findOneByEmail(email);
     }
 
     @Override
@@ -254,5 +261,17 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("rating").descending());
 
         return userRepository.findFriendsSortedByRating(loggedUser.getId(), pageable);
+    }
+
+    @Async
+    public void linkRandomFriendsAsync(User requestedUser) {
+        int numberOfBots = 20;
+        List<User> botUsers = userRepository.findByType(UserType.BOT);
+        if (botUsers.isEmpty()) {
+            botUsers = BotGenerator.generate(numberOfBots);
+            userRepository.saveAll(botUsers);
+        }
+        FriendLinker.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
+        userRepository.save(requestedUser);
     }
 }

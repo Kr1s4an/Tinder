@@ -32,6 +32,8 @@ public interface UserService {
 
     Optional<User> getById(long id);
 
+    Optional<User> findOneByEmail(String email);
+
     boolean isEmailRegistered(String email);
 
     UserDetailsService userDetailsService();
@@ -57,4 +59,6 @@ public interface UserService {
     boolean areFriends(User user1, User user2);
 
     Page<FriendRatingDetails> findFriendsSortedByRating(int pageNumber, int pageSize);
+
+    void linkRandomFriendsAsync(User requestedUser);
 }
