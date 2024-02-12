@@ -6,6 +6,7 @@ import com.volasoftware.tinder.dto.UserDto;
 import com.volasoftware.tinder.exception.EmailAlreadyRegisteredException;
 import com.volasoftware.tinder.exception.NoSuchFriendForUserException;
 import com.volasoftware.tinder.exception.UserDoesNotExistException;
+import com.volasoftware.tinder.mapper.UserMapper;
 import com.volasoftware.tinder.model.*;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
@@ -54,6 +55,9 @@ public class UserServiceTest {
 
     @Mock
     Authentication authentication;
+
+    @Mock
+    UserMapper userMapper;
 
     @InjectMocks
     private UserServiceImpl userServiceImpl;

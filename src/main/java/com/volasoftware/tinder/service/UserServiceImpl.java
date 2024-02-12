@@ -2,6 +2,7 @@ package com.volasoftware.tinder.service;
 
 import com.volasoftware.tinder.dto.*;
 import com.volasoftware.tinder.exception.*;
+import com.volasoftware.tinder.mapper.UserMapper;
 import com.volasoftware.tinder.model.*;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final VerificationRepository verificationRepository;
     private final EmailSenderService emailSender;
     private final EmailContentService emailContent;
+//    private final UserMapper userMapper;
 
     @Value("${localhost_verify}")
     private String localHostVerify;
@@ -94,13 +96,8 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyRegisteredException("Email already exist!");
         }
 
-        User user = new User();
-        user.setEmail(userDto.getEmail());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
+        User user = UserMapper.INSTANCE.userDtoToUser(userDto);
         user.setPassword(PasswordEncoder.encodePassword(userDto.getPassword()));
-        user.setGender(userDto.getGender());
-        user.setRole(Role.USER);
         userRepository.save(user);
 
         Verification token = new Verification();
