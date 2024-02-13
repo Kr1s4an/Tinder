@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
     public UserProfileDto getCurrentUserProfile() {
         User user = getLoggedUser();
 
-        return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
+        return UserMapper.INSTANCE.userToUserProfileDto(user);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class UserServiceImpl implements UserService {
 
         user = userRepository.save(user);
 
-        return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
+        return UserMapper.INSTANCE.userToUserProfileDto(user);
     }
 
     public void generateNewPasswordForUser(String email) throws MessagingException, IOException {
@@ -243,7 +243,7 @@ public class UserServiceImpl implements UserService {
             throw new NoSuchFriendForUserException("You are not friends with this user");
         }
 
-        return new FriendProfileDto(friend.getFirstName(), friend.getLastName(), friend.getAge(), friend.getGender());
+        return UserMapper.INSTANCE.userToFriendProfileDto(friend);
     }
 
     public boolean areFriends(User user1, User user2) {
@@ -266,9 +266,12 @@ public class UserServiceImpl implements UserService {
         List<User> botUsers = userRepository.findByType(UserType.BOT);
         if (botUsers.isEmpty()) {
             botUsers = BotGenerator.generate(numberOfBots);
-            userRepository.saveAll(botUsers);
         }
+        List<User> allUsers = botUsers;
+        allUsers.add(requestedUser);
+
         FriendLinker.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
-        userRepository.save(requestedUser);
+        userRepository.saveAll(allUsers);
+
     }
 }

@@ -1,6 +1,8 @@
 package com.volasoftware.tinder.mapper;
 
+import com.volasoftware.tinder.dto.FriendProfileDto;
 import com.volasoftware.tinder.dto.UserDto;
+import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,4 +23,7 @@ public interface UserMapper {
     @Mapping(target = "authorities", ignore = true)
     User userDtoToUser(UserDto userDto);
 
+    UserProfileDto userToUserProfileDto(User user);
+
+    FriendProfileDto userToFriendProfileDto(User user);
 }
