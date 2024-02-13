@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     private final VerificationRepository verificationRepository;
     private final EmailSenderService emailSender;
     private final EmailContentService emailContent;
-//    private final UserMapper userMapper;
+    private final UserMapper userMapper;
 
     @Value("${localhost_verify}")
     private String localHostVerify;
@@ -47,11 +47,12 @@ public class UserServiceImpl implements UserService {
             UserRepository userRepository,
             VerificationRepository verificationRepository,
             EmailSenderService emailSender,
-            EmailContentService emailContent) {
+            EmailContentService emailContent, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.verificationRepository = verificationRepository;
         this.emailSender = emailSender;
         this.emailContent = emailContent;
+        this.userMapper = userMapper;
     }
 
     public User getLoggedUser() {
@@ -96,7 +97,7 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyRegisteredException("Email already exist!");
         }
 
-        User user = UserMapper.INSTANCE.userDtoToUser(userDto);
+        User user = userMapper.userDtoToUser(userDto);
         user.setPassword(PasswordEncoder.encodePassword(userDto.getPassword()));
         userRepository.save(user);
 
@@ -151,7 +152,7 @@ public class UserServiceImpl implements UserService {
     public UserProfileDto getCurrentUserProfile() {
         User user = getLoggedUser();
 
-        return UserMapper.INSTANCE.userToUserProfileDto(user);
+        return userMapper.userToUserProfileDto(user);
     }
 
     @Override
@@ -173,7 +174,7 @@ public class UserServiceImpl implements UserService {
 
         user = userRepository.save(user);
 
-        return UserMapper.INSTANCE.userToUserProfileDto(user);
+        return userMapper.userToUserProfileDto(user);
     }
 
     public void generateNewPasswordForUser(String email) throws MessagingException, IOException {
@@ -243,7 +244,7 @@ public class UserServiceImpl implements UserService {
             throw new NoSuchFriendForUserException("You are not friends with this user");
         }
 
-        return UserMapper.INSTANCE.userToFriendProfileDto(friend);
+        return userMapper.userToFriendProfileDto(friend);
     }
 
     public boolean areFriends(User user1, User user2) {

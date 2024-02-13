@@ -10,8 +10,6 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "verified", ignore = true)
     @Mapping(target = "role", expression = "java(com.volasoftware.tinder.model.Role.USER)")
