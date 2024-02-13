@@ -272,6 +272,5 @@ public class UserServiceImpl implements UserService {
 
         FriendLinker.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
         userRepository.saveAll(allUsers);
-
     }
 }
