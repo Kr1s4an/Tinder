@@ -537,12 +537,15 @@ public class UserServiceTest {
 
         List<User> botUsers = Arrays.asList(botUser1, botUser2);
 
+        List<User> allUsers = new ArrayList<>(botUsers);
+        allUsers.add(user);
+
         when(userRepository.findByType(UserType.BOT)).thenReturn(botUsers);
 
         userServiceImpl.linkRandomFriendsAsync(user);
 
         verify(userRepository, times(1)).findByType(UserType.BOT);
-        verify(userRepository, times(1)).save(user);
+        verify(userRepository, times(1)).saveAll(allUsers);
         verifyNoMoreInteractions(userRepository);
     }
 }

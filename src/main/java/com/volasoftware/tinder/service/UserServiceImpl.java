@@ -267,7 +267,7 @@ public class UserServiceImpl implements UserService {
         if (botUsers.isEmpty()) {
             botUsers = BotGenerator.generate(numberOfBots);
         }
-        List<User> allUsers = botUsers;
+        List<User> allUsers = new ArrayList<>(botUsers);
         allUsers.add(requestedUser);
 
         FriendLinker.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
