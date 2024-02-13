@@ -2,6 +2,7 @@ package com.volasoftware.tinder.service;
 
 import com.volasoftware.tinder.dto.*;
 import com.volasoftware.tinder.exception.*;
+import com.volasoftware.tinder.mapper.UserMapper;
 import com.volasoftware.tinder.model.*;
 import com.volasoftware.tinder.repository.UserRepository;
 import com.volasoftware.tinder.repository.VerificationRepository;
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final VerificationRepository verificationRepository;
     private final EmailSenderService emailSender;
     private final EmailContentService emailContent;
+    private final UserMapper userMapper;
 
     @Value("${localhost_verify}")
     private String localHostVerify;
@@ -45,11 +47,12 @@ public class UserServiceImpl implements UserService {
             UserRepository userRepository,
             VerificationRepository verificationRepository,
             EmailSenderService emailSender,
-            EmailContentService emailContent) {
+            EmailContentService emailContent, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.verificationRepository = verificationRepository;
         this.emailSender = emailSender;
         this.emailContent = emailContent;
+        this.userMapper = userMapper;
     }
 
     public User getLoggedUser() {
@@ -94,13 +97,8 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyRegisteredException("Email already exist!");
         }
 
-        User user = new User();
-        user.setEmail(userDto.getEmail());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
+        User user = userMapper.userDtoToUser(userDto);
         user.setPassword(PasswordEncoder.encodePassword(userDto.getPassword()));
-        user.setGender(userDto.getGender());
-        user.setRole(Role.USER);
         userRepository.save(user);
 
         Verification token = new Verification();
@@ -154,7 +152,7 @@ public class UserServiceImpl implements UserService {
     public UserProfileDto getCurrentUserProfile() {
         User user = getLoggedUser();
 
-        return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
+        return userMapper.userToUserProfileDto(user);
     }
 
     @Override
@@ -176,7 +174,7 @@ public class UserServiceImpl implements UserService {
 
         user = userRepository.save(user);
 
-        return new UserProfileDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getGender());
+        return userMapper.userToUserProfileDto(user);
     }
 
     public void generateNewPasswordForUser(String email) throws MessagingException, IOException {
@@ -246,7 +244,7 @@ public class UserServiceImpl implements UserService {
             throw new NoSuchFriendForUserException("You are not friends with this user");
         }
 
-        return new FriendProfileDto(friend.getFirstName(), friend.getLastName(), friend.getAge(), friend.getGender());
+        return userMapper.userToFriendProfileDto(friend);
     }
 
     public boolean areFriends(User user1, User user2) {
@@ -269,9 +267,11 @@ public class UserServiceImpl implements UserService {
         List<User> botUsers = userRepository.findByType(UserType.BOT);
         if (botUsers.isEmpty()) {
             botUsers = BotGenerator.generate(numberOfBots);
-            userRepository.saveAll(botUsers);
         }
+        List<User> allUsers = new ArrayList<>(botUsers);
+        allUsers.add(requestedUser);
+
         FriendLinker.linkRandomFriendsForRequestedUser(requestedUser, botUsers);
-        userRepository.save(requestedUser);
+        userRepository.saveAll(allUsers);
     }
 }
