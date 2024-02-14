@@ -1,6 +1,6 @@
 package com.volasoftware.tinder.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -11,13 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Service
-public class EmailContentServiceImpl implements EmailContentService{
+@RequiredArgsConstructor
+public class EmailContentServiceImpl implements EmailContentService {
 
     private final ResourceLoader resourceLoader;
-
-    public EmailContentServiceImpl(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
 
     public String createContent(String replacement, String templateClassPath) throws IOException {
         Resource emailResource = resourceLoader.getResource(templateClassPath);

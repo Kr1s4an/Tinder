@@ -3,7 +3,15 @@ package com.volasoftware.tinder.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RatingDto {
     @NotNull
     private Long friendId;
@@ -11,20 +19,4 @@ public class RatingDto {
     @Min(1)
     @Max(10)
     private int rating;
-
-    public Long getFriendId() {
-        return friendId;
-    }
-
-    public void setFriendId(Long friendId) {
-        this.friendId = friendId;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
 }

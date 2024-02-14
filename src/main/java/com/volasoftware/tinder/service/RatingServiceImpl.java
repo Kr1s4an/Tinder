@@ -6,18 +6,14 @@ import com.volasoftware.tinder.exception.UserDoesNotExistException;
 import com.volasoftware.tinder.model.Rating;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.repository.RatingRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RatingServiceImpl implements RatingService {
     private final UserService userService;
     private final RatingRepository ratingRepository;
-
-    public RatingServiceImpl(UserService userService,
-                             RatingRepository ratingRepository) {
-        this.userService = userService;
-        this.ratingRepository = ratingRepository;
-    }
 
     public void rateFriend(RatingDto ratingDto) {
         User user = userService.getLoggedUser();

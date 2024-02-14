@@ -9,6 +9,7 @@ import com.volasoftware.tinder.service.FriendService;
 import com.volasoftware.tinder.service.RatingService;
 import com.volasoftware.tinder.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,19 +19,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/friends")
+@AllArgsConstructor
 public class FriendController {
 
     private final FriendService friendService;
     private final UserService userService;
     private final RatingService ratingService;
-
-    public FriendController(FriendService friendService,
-                            UserService userService,
-                            RatingService ratingService) {
-        this.friendService = friendService;
-        this.userService = userService;
-        this.ratingService = ratingService;
-    }
 
     @PostMapping("/seed/{id}")
     public ResponseEntity<String> seedFriends(@RequestParam(required = false) Long userId) {
