@@ -7,6 +7,7 @@ import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.Verification;
 import com.volasoftware.tinder.repository.VerificationRepository;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class VerificationService {
     private final VerificationRepository verificationRepository;
     private final UserService userService;
@@ -24,16 +26,6 @@ public class VerificationService {
 
     @Value("${localhost_verify}")
     private String localHostVerify;
-
-    public VerificationService(VerificationRepository verificationRepository,
-                               UserService userService,
-                               EmailSenderService emailSender,
-                               EmailContentService emailContent) {
-        this.verificationRepository = verificationRepository;
-        this.userService = userService;
-        this.emailSender = emailSender;
-        this.emailContent = emailContent;
-    }
 
     public void saveVerificationToken(Verification token) {
         verificationRepository.save(token);

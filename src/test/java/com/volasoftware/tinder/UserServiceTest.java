@@ -72,11 +72,11 @@ public class UserServiceTest {
         userDto.setGender(Gender.MALE);
 
         User user = new User();
-        user.setEmail("test@example.com");
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setPassword("hashed_password");
-        user.setGender(Gender.MALE);
+        user.setEmail(userDto.getEmail());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setPassword(userDto.getPassword());
+        user.setGender(userDto.getGender());
         user.setRole(Role.USER);
 
         Verification verification = new Verification();
@@ -88,6 +88,7 @@ public class UserServiceTest {
         emailSender.sendEmail(user.getEmail(), "Subject", "content");
 
         when(userRepository.findOneByEmail(userDto.getEmail())).thenReturn(Optional.empty());
+        when(userMapper.userDtoToUser(userDto)).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(new User());
         when(verificationRepository.saveAndFlush(any(Verification.class))).thenReturn(new Verification());
 
@@ -331,21 +332,21 @@ public class UserServiceTest {
 
     @Test
     public void testFindFriendById() {
-        Long friendId = 1L;
-        String friendFirstName = "John";
-        String friendLastName = "Doe";
-        int friendAge = 25;
-        Gender friendGender = Gender.MALE;
-
         User loggedUser = new User();
         loggedUser.setId(2L);
 
         User friend = new User();
-        friend.setId(friendId);
-        friend.setFirstName(friendFirstName);
-        friend.setLastName(friendLastName);
-        friend.setAge(friendAge);
-        friend.setGender(friendGender);
+        friend.setId(1L);
+        friend.setFirstName("John");
+        friend.setLastName("Doe");
+        friend.setAge(25);
+        friend.setGender(Gender.MALE);
+
+        FriendProfileDto friendProfileDto = new FriendProfileDto();
+        friendProfileDto.setFirstName(friend.getFirstName());
+        friendProfileDto.setLastName(friend.getLastName());
+        friendProfileDto.setAge(friend.getAge());
+        friendProfileDto.setGender(friend.getGender());
 
         Set<User> friendsOfLoggedUser = new HashSet<>();
         Set<User> friendsOfFriend = new HashSet<>();
@@ -364,15 +365,19 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         when(userRepository.findOneByEmail(anyString())).thenReturn(Optional.of(loggedUser));
-        when(userRepository.findById(friendId)).thenReturn(Optional.of(friend));
+        when(userRepository.findById(friend.getId())).thenReturn(Optional.of(friend));
+        when(userMapper.userToFriendProfileDto(friend)).thenReturn(friendProfileDto);
 
-        FriendProfileDto result = userServiceImpl.findFriendById(friendId);
+        userServiceImpl.findFriendById(friend.getId());
 
-        assertNotNull(result);
-        assertEquals(friendFirstName, result.getFirstName());
-        assertEquals(friendLastName, result.getLastName());
-        assertEquals(friendAge, result.getAge());
-        assertEquals(friendGender, result.getGender());
+        assertNotNull(friendProfileDto);
+        assertEquals(friend.getFirstName(), friendProfileDto.getFirstName());
+        assertEquals(friend.getLastName(), friendProfileDto.getLastName());
+        assertEquals(friend.getAge(), friendProfileDto.getAge());
+        assertEquals(friend.getGender(), friendProfileDto.getGender());
+        verify(userRepository, times(1)).findById(friend.getId());
+        verify(userMapper, times(1)).userToFriendProfileDto(friend);
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test

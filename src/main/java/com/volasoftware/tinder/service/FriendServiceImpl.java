@@ -4,6 +4,7 @@ import com.volasoftware.tinder.exception.UserDoesNotExistException;
 import com.volasoftware.tinder.model.User;
 import com.volasoftware.tinder.model.UserType;
 import com.volasoftware.tinder.utility.BotGenerator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,13 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FriendServiceImpl implements FriendService {
 
     private final UserService userService;
-
-    public FriendServiceImpl(UserService userService) {
-        this.userService = userService;
-    }
 
     public void seedFriend(@RequestParam(required = false) Long userId) {
         List<User> users = new ArrayList<>();

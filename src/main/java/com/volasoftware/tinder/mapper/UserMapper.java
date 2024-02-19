@@ -6,7 +6,6 @@ import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {

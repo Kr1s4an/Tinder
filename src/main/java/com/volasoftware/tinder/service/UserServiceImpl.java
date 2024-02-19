@@ -11,6 +11,7 @@ import com.volasoftware.tinder.utility.FriendLinker;
 import com.volasoftware.tinder.utility.PasswordEncoder;
 import com.volasoftware.tinder.utility.PasswordGenerator;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -42,18 +44,6 @@ public class UserServiceImpl implements UserService {
 
     @Value("${localhost_verify}")
     private String localHostVerify;
-
-    public UserServiceImpl(
-            UserRepository userRepository,
-            VerificationRepository verificationRepository,
-            EmailSenderService emailSender,
-            EmailContentService emailContent, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.verificationRepository = verificationRepository;
-        this.emailSender = emailSender;
-        this.emailContent = emailContent;
-        this.userMapper = userMapper;
-    }
 
     public User getLoggedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
