@@ -28,5 +28,3 @@ public class FirebaseStorageUploader {
         return blob.getMediaLink();
     }
 }
-
-
