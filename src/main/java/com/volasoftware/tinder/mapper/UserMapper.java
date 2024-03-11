@@ -6,8 +6,9 @@ import com.volasoftware.tinder.dto.UserProfileDto;
 import com.volasoftware.tinder.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "verified", ignore = true)
@@ -17,7 +18,7 @@ public interface UserMapper {
     @Mapping(target = "ratings", ignore = true)
     @Mapping(target = "age", ignore = true)
     @Mapping(target = "type", ignore = true)
-    @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "profilePictureUrl", ignore = true)
     User userDtoToUser(UserDto userDto);
 
     UserProfileDto userToUserProfileDto(User user);
