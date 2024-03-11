@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserProfilePictureController {
     private final UserProfilePictureService profilePictureService;
 
-    @RequestMapping(path = "/upload-profile-picture",
+    @RequestMapping(path = "/profile-picture",
             method = RequestMethod.POST,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file,
