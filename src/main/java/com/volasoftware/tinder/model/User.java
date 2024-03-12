@@ -49,6 +49,8 @@ public class User extends Auditable<String> implements UserDetails {
     private UserType type;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Rating> ratings = new HashSet<>();
+    @Column(name = "PROFILE_PICTURE_URL")
+    private String profilePictureUrl;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
